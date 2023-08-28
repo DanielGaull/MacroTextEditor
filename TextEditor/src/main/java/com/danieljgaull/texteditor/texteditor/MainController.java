@@ -8,10 +8,7 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
 import javafx.stage.FileChooser;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
@@ -24,10 +21,16 @@ public class MainController {
     @FXML
     private Label statusText;
 
+    private File currentLoadedFile;
+
     public void initialize() {
         // Only set the progress bar visible when stuff is loading
         progressBar.setVisible(false);
     }
+
+    /*
+     * Bound methods
+     */
 
     public void openFile(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
@@ -37,6 +40,21 @@ public class MainController {
             doOpenFile(file);
         }
     }
+
+    public void saveFile(ActionEvent event) {
+        try {
+            FileWriter fileWriter = new FileWriter(currentLoadedFile);
+            fileWriter.write(mainField.getText());
+            fileWriter.close();
+            statusText.setText("File saved to " + currentLoadedFile.getName());
+        } catch (IOException ex) {
+            statusText.setText("Error saving file");
+        }
+    }
+
+    /*
+     * Helper Methods
+     */
 
     private void doOpenFile(File file) {
         Task<String> loadFileTask = new Task<>() {
@@ -57,7 +75,6 @@ public class MainController {
                     fileText.append(line).append("\n");
                     updateProgress(++linesRead, linesToRead);
                 }
-                statusText.setText("Opened " + file.getName());
                 return fileText.toString();
             }
         };
@@ -65,14 +82,14 @@ public class MainController {
             progressBar.setVisible(false);
             try {
                 mainField.setText(loadFileTask.get());
+                statusText.setText("Opened " + file.getName());
+                currentLoadedFile = file;
             } catch (InterruptedException | ExecutionException e) {
-                // TODO... status text
                 statusText.setText("Error opening file");
             }
         });
         loadFileTask.setOnFailed(workerStateEvent -> {
             progressBar.setVisible(false);
-            // TODO... status text
             statusText.setText("Error opening file");
         });
         progressBar.progressProperty().bind(loadFileTask.progressProperty());

@@ -20,7 +20,7 @@
             <Menu text="File">
                 <MenuItem text="New"/>
                 <MenuItem text="Open" onAction="#openFile"/>
-                <MenuItem text="Save"/>
+                <MenuItem text="Save" onAction="#saveFile"/>
                 <MenuItem text="Save As"/>
             </Menu>
             <Menu text="Edit">
@@ -47,10 +47,10 @@
 
     <bottom>
         <HBox>
+            <Label fx:id="statusText" prefWidth="150.0"/>
             <ProgressBar fx:id="progressBar"
                          progress="0.0"
             />
-            <Label fx:id="statusText" prefWidth="150.0"/>
         </HBox>
     </bottom>
 </BorderPane>
