@@ -1,14 +1,11 @@
 package com.danieljgaull.texteditor.texteditor;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 
 public class MainController {
     @FXML
-    private Label welcomeText;
+    private TextArea mainField;
 
-    @FXML
-    protected void onHelloButtonClick() {
-        welcomeText.setText("Welcome to JavaFX Application!");
-    }
+    
 }
