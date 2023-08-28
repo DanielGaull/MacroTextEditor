@@ -3,6 +3,7 @@ package com.danieljgaull.texteditor.texteditor;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
 import javafx.stage.FileChooser;
@@ -20,6 +21,8 @@ public class MainController {
     private TextArea mainField;
     @FXML
     private ProgressBar progressBar;
+    @FXML
+    private Label statusText;
 
     public void initialize() {
         // Only set the progress bar visible when stuff is loading
@@ -40,6 +43,8 @@ public class MainController {
             @Override
             protected String call() throws Exception {
                 progressBar.setVisible(true);
+                statusText.setText("Opening file...");
+
                 BufferedReader reader = new BufferedReader(new FileReader(file));
                 long linesToRead;
                 try (Stream<String> stream = Files.lines(file.toPath())) {
@@ -52,6 +57,7 @@ public class MainController {
                     fileText.append(line).append("\n");
                     updateProgress(++linesRead, linesToRead);
                 }
+                statusText.setText("Opened " + file.getName());
                 return fileText.toString();
             }
         };
@@ -61,11 +67,13 @@ public class MainController {
                 mainField.setText(loadFileTask.get());
             } catch (InterruptedException | ExecutionException e) {
                 // TODO... status text
+                statusText.setText("Error opening file");
             }
         });
         loadFileTask.setOnFailed(workerStateEvent -> {
             progressBar.setVisible(false);
             // TODO... status text
+            statusText.setText("Error opening file");
         });
         progressBar.progressProperty().bind(loadFileTask.progressProperty());
         loadFileTask.run();
