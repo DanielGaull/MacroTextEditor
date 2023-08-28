@@ -9,6 +9,7 @@
 <?import javafx.scene.control.Menu?>
 
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ProgressBar?>
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.danieljgaull.texteditor.texteditor.MainController">
 
@@ -16,7 +17,7 @@
         <MenuBar>
             <Menu text="File">
                 <MenuItem text="New"/>
-                <MenuItem text="Open"/>
+                <MenuItem text="Open" onAction="#openFile"/>
                 <MenuItem text="Save"/>
                 <MenuItem text="Save As"/>
             </Menu>
@@ -41,4 +42,10 @@
             />
         </AnchorPane>
     </center>
+
+    <bottom>
+        <ProgressBar fx:id="progressBar"
+                     progress="0.0"
+        />
+    </bottom>
 </BorderPane>
