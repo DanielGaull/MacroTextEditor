@@ -21,6 +21,11 @@ public class MainController {
     @FXML
     private ProgressBar progressBar;
 
+    public void initialize() {
+        // Only set the progress bar visible when stuff is loading
+        progressBar.setVisible(false);
+    }
+
     public void openFile(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files (*.txt)", "*.txt"));
@@ -34,6 +39,7 @@ public class MainController {
         Task<String> loadFileTask = new Task<>() {
             @Override
             protected String call() throws Exception {
+                progressBar.setVisible(true);
                 BufferedReader reader = new BufferedReader(new FileReader(file));
                 long linesToRead;
                 try (Stream<String> stream = Files.lines(file.toPath())) {
@@ -50,6 +56,7 @@ public class MainController {
             }
         };
         loadFileTask.setOnSucceeded(workerStateEvent -> {
+            progressBar.setVisible(false);
             try {
                 mainField.setText(loadFileTask.get());
             } catch (InterruptedException | ExecutionException e) {
@@ -57,6 +64,7 @@ public class MainController {
             }
         });
         loadFileTask.setOnFailed(workerStateEvent -> {
+            progressBar.setVisible(false);
             // TODO... status text
         });
         progressBar.progressProperty().bind(loadFileTask.progressProperty());
