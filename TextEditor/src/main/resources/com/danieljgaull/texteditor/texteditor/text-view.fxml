@@ -18,10 +18,10 @@
     <top>
         <MenuBar>
             <Menu text="File">
-                <MenuItem text="New" fx:id="menuNewOption"/>
-                <MenuItem text="Open" fx:id="menuOpenOption" onAction="#openFile"/>
-                <MenuItem text="Save" onAction="#save"/>
-                <MenuItem text="Save As" onAction="#saveAs"/>
+                <MenuItem text="New"/>
+                <MenuItem text="Open" onAction="#onOpenFile"/>
+                <MenuItem text="Save" onAction="#onSave"/>
+                <MenuItem text="Save As" onAction="#onSaveAs"/>
             </Menu>
             <Menu text="Edit">
                 <MenuItem text="Undo"/>

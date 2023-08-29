@@ -23,30 +23,46 @@ public class MainUiController {
         progressBar.setVisible(false);
 
         textEditorController = new TextEditorController(str -> statusText.setText(str));
+
+        KeyCodeInitializer keyCodeInitializer = new KeyCodeInitializer();
+
+        mainField.sceneProperty().addListener((observable, oldScene, newScene) -> {
+            if (newScene != null) {
+                keyCodeInitializer.initialize(mainField.getScene(), this);
+            }
+        });
     }
 
     /*
      * Bound methods
      */
 
-    public void openFile(ActionEvent event) {
-        textEditorController.open(txt -> mainField.setText(txt),
-                () -> progressBar.setVisible(true), () -> progressBar.setVisible(false),
-                () -> progressBar.setVisible(false),
-                List.of(progressBar.progressProperty()));
+    public void onOpenFile(ActionEvent event) {
+        open();
     }
-    public void saveAs(ActionEvent event) {
-        textEditorController.saveAs(mainField.getText());
+    public void onSaveAs(ActionEvent event) {
+        saveAs();
     }
-    public void save(ActionEvent event) {
-        textEditorController.save(mainField.getText());
+    public void onSave(ActionEvent event) {
+        save();
     }
 
     /*
      * Helper Methods
      */
+    public void save() {
+        textEditorController.save(mainField.getText());
+    }
 
+    public void saveAs() {
+        textEditorController.saveAs(mainField.getText());
+    }
 
-
+    public void open() {
+        textEditorController.open(txt -> mainField.setText(txt),
+                () -> progressBar.setVisible(true), () -> progressBar.setVisible(false),
+                () -> progressBar.setVisible(false),
+                List.of(progressBar.progressProperty()));
+    }
 
 }
