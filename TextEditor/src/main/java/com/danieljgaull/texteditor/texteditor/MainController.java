@@ -43,10 +43,19 @@ public class MainController {
 
     public void saveFile(ActionEvent event) {
         try {
-            FileWriter fileWriter = new FileWriter(currentLoadedFile);
-            fileWriter.write(mainField.getText());
-            fileWriter.close();
-            statusText.setText("File saved to " + currentLoadedFile.getName());
+            if (currentLoadedFile == null) {
+                doSaveAs();
+                return;
+            }
+            doSaveFile(currentLoadedFile);
+        } catch (IOException ex) {
+            statusText.setText("Error saving file");
+        }
+    }
+
+    public void saveAs(ActionEvent event) {
+        try {
+            doSaveAs();
         } catch (IOException ex) {
             statusText.setText("Error saving file");
         }
@@ -94,5 +103,25 @@ public class MainController {
         });
         progressBar.progressProperty().bind(loadFileTask.progressProperty());
         loadFileTask.run();
+    }
+
+    private void doSaveFile(File file) throws IOException {
+        FileWriter fileWriter = new FileWriter(file);
+        fileWriter.write(mainField.getText());
+        fileWriter.close();
+        statusText.setText("File saved to " + file.getName());
+    }
+
+    private void doSaveAs() throws IOException {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files (*.txt)", "*.txt"));
+        File file = fileChooser.showSaveDialog(null);
+        if (file == null) {
+            statusText.setText("Invalid save file provided");
+            return;
+        }
+
+        currentLoadedFile = file;
+        doSaveFile(file);
     }
 }
