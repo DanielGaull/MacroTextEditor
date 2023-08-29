@@ -5,4 +5,6 @@ module com.danieljgaull.texteditor.texteditor {
 
     opens com.danieljgaull.texteditor.texteditor to javafx.fxml;
     exports com.danieljgaull.texteditor.texteditor;
+    exports com.danieljgaull.texteditor.texteditor.handlers;
+    opens com.danieljgaull.texteditor.texteditor.handlers to javafx.fxml;
 }
