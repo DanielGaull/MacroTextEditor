@@ -8,6 +8,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
 import java.util.List;
@@ -40,6 +42,7 @@ public class MainUiController implements PrimaryStageAware {
         mainField.textProperty().addListener((observableValue, oldValue, newValue) -> {
             onTextChange(oldValue, newValue);
         });
+        mainField.setFont(Font.font("Consolas", FontWeight.NORMAL, 13));
 
         KeyCodeInitializer keyCodeInitializer = new KeyCodeInitializer();
 
