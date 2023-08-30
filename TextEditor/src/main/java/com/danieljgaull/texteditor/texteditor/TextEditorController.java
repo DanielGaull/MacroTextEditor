@@ -3,6 +3,7 @@ package com.danieljgaull.texteditor.texteditor;
 import com.danieljgaull.texteditor.texteditor.handlers.Action;
 import com.danieljgaull.texteditor.texteditor.handlers.FileContentsLoadedHandler;
 import com.danieljgaull.texteditor.texteditor.handlers.MessageHandler;
+import com.danieljgaull.texteditor.texteditor.modes.Modes;
 import javafx.beans.property.DoubleProperty;
 import javafx.concurrent.Task;
 import javafx.stage.FileChooser;
@@ -17,16 +18,23 @@ public class TextEditorController {
 
     private MessageHandler statusMessageHandler;
     private MessageHandler titleChangeHandler;
+    private MessageHandler modeChangeHandler;
 
     private File currentLoadedFile;
     private boolean isDirty;
+    private Modes modes;
 
-    public TextEditorController(MessageHandler statusMessageHandler, MessageHandler titleChangeHandler) {
+    public TextEditorController(MessageHandler statusMessageHandler, MessageHandler titleChangeHandler,
+                                MessageHandler modeChangeHandler) {
         this.statusMessageHandler = statusMessageHandler;
         this.titleChangeHandler = titleChangeHandler;
+        this.modeChangeHandler = modeChangeHandler;
 
         currentLoadedFile = null;
         clearDirty();
+        modes = new Modes();
+
+        modeChangeHandler.handle(modes.getMode().getName());
     }
 
     public void makeDirty() {

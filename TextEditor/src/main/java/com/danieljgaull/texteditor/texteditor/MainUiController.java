@@ -21,6 +21,8 @@ public class MainUiController implements PrimaryStageAware {
     private ProgressBar progressBar;
     @FXML
     private Label statusText;
+    @FXML
+    private Label modeText;
 
     private Stage stage;
 
@@ -36,7 +38,8 @@ public class MainUiController implements PrimaryStageAware {
                     if (stage != null) {
                         stage.setTitle(str);
                     }
-                }
+                },
+                str -> modeText.setText("Mode: " + str)
         );
 
         mainField.textProperty().addListener((observableValue, oldValue, newValue) -> {

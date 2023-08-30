@@ -12,6 +12,7 @@
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.danieljgaull.texteditor.texteditor.MainUiController">
 
@@ -51,6 +52,8 @@
             <ProgressBar fx:id="progressBar"
                          progress="0.0"
             />
+            <Pane HBox.hgrow="ALWAYS" />
+            <Label fx:id="modeText" style="-fx-padding: 0 5px 0 0"/>
         </HBox>
     </bottom>
 </BorderPane>
