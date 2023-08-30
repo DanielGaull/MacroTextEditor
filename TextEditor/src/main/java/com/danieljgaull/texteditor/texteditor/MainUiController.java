@@ -1,14 +1,18 @@
 package com.danieljgaull.texteditor.texteditor;
 
+import com.danieljgaull.texteditor.texteditor.util.PrimaryStageAware;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
+import javafx.stage.Stage;
 
 import java.util.List;
 
-public class MainUiController {
+public class MainUiController implements PrimaryStageAware {
     @FXML
     private TextArea mainField;
     @FXML
@@ -16,13 +20,26 @@ public class MainUiController {
     @FXML
     private Label statusText;
 
+    private Stage stage;
+
     private TextEditorController textEditorController;
 
     public void initialize() {
         // Only set the progress bar visible when stuff is loading
         progressBar.setVisible(false);
 
-        textEditorController = new TextEditorController(str -> statusText.setText(str));
+        textEditorController = new TextEditorController(
+                str -> statusText.setText(str),
+                str -> {
+                    if (stage != null) {
+                        stage.setTitle(str);
+                    }
+                }
+        );
+
+        mainField.textProperty().addListener((observableValue, oldValue, newValue) -> {
+            onTextChange(oldValue, newValue);
+        });
 
         KeyCodeInitializer keyCodeInitializer = new KeyCodeInitializer();
 
@@ -47,6 +64,13 @@ public class MainUiController {
         save();
     }
 
+    public void onTextChange(String oldText, String newText) {
+        textEditorController.makeDirty();
+
+        // Mark that the file is not dirty anymore
+
+    }
+
     /*
      * Helper Methods
      */
@@ -65,4 +89,8 @@ public class MainUiController {
                 List.of(progressBar.progressProperty()));
     }
 
+    @Override
+    public void setPrimaryStage(Stage stage) {
+        this.stage = stage;
+    }
 }

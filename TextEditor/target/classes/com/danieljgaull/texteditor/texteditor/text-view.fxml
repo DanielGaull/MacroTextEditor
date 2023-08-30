@@ -19,9 +19,9 @@
         <MenuBar>
             <Menu text="File">
                 <MenuItem text="New"/>
-                <MenuItem text="Open" onAction="#onOpenFile"/>
-                <MenuItem text="Save" onAction="#onSave"/>
-                <MenuItem text="Save As" onAction="#onSaveAs"/>
+                <MenuItem text="Open (Ctrl+O)" onAction="#onOpenFile"/>
+                <MenuItem text="Save (Ctrl+S" onAction="#onSave"/>
+                <MenuItem text="Save As (Ctrl+Shift+S)" onAction="#onSaveAs"/>
             </Menu>
             <Menu text="Edit">
                 <MenuItem text="Undo"/>

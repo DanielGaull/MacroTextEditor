@@ -1,6 +1,6 @@
 package com.danieljgaull.texteditor.texteditor.handlers;
 
-public interface StatusMessageHandler {
+public interface MessageHandler {
 
     void handle(String message);
 

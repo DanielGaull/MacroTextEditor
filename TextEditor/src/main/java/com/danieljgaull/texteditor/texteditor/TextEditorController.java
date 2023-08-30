@@ -2,9 +2,8 @@ package com.danieljgaull.texteditor.texteditor;
 
 import com.danieljgaull.texteditor.texteditor.handlers.Action;
 import com.danieljgaull.texteditor.texteditor.handlers.FileContentsLoadedHandler;
-import com.danieljgaull.texteditor.texteditor.handlers.StatusMessageHandler;
+import com.danieljgaull.texteditor.texteditor.handlers.MessageHandler;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.Property;
 import javafx.concurrent.Task;
 import javafx.stage.FileChooser;
 
@@ -16,12 +15,34 @@ import java.util.stream.Stream;
 
 public class TextEditorController {
 
-    private StatusMessageHandler statusMessageHandler;
+    private MessageHandler statusMessageHandler;
+    private MessageHandler titleChangeHandler;
 
     private File currentLoadedFile;
+    private boolean isDirty;
 
-    public TextEditorController(StatusMessageHandler statusMessageHandler) {
+    public TextEditorController(MessageHandler statusMessageHandler, MessageHandler titleChangeHandler) {
         this.statusMessageHandler = statusMessageHandler;
+        this.titleChangeHandler = titleChangeHandler;
+
+        currentLoadedFile = null;
+        clearDirty();
+    }
+
+    public void makeDirty() {
+        isDirty = true;
+        changeTitle("*");
+    }
+    public void clearDirty() {
+        isDirty = false;
+        changeTitle("");
+    }
+    private void changeTitle(String postfix) {
+        if (currentLoadedFile != null) {
+            titleChangeHandler.handle(currentLoadedFile.getName() + postfix + " - Text Editor");
+        } else {
+            titleChangeHandler.handle("New File" + postfix + " - Text Editor");
+        }
     }
 
     public void save(String text) {
@@ -60,6 +81,7 @@ public class TextEditorController {
         fileWriter.write(text);
         fileWriter.close();
         statusMessageHandler.handle("File saved to " + file.getName());
+        clearDirty();
     }
 
     private void doSaveAs(String text) throws IOException {
@@ -81,45 +103,42 @@ public class TextEditorController {
         Task<String> loadFileTask = new Task<>() {
             @Override
             protected String call() throws Exception {
-//                progressBar.setVisible(true);
-                onStart.call();
-                statusMessageHandler.handle("Opening file...");
+            onStart.call();
+            statusMessageHandler.handle("Opening file...");
 
-                BufferedReader reader = new BufferedReader(new FileReader(file));
-                long linesToRead;
-                try (Stream<String> stream = Files.lines(file.toPath())) {
-                    linesToRead = stream.count();
-                }
-                StringBuilder fileText = new StringBuilder();
-                long linesRead = 0;
-                String line = null;
-                while ((line = reader.readLine()) != null) {
-                    fileText.append(line).append("\n");
-                    updateProgress(++linesRead, linesToRead);
-                }
-                return fileText.toString();
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            long linesToRead;
+            try (Stream<String> stream = Files.lines(file.toPath())) {
+                linesToRead = stream.count();
+            }
+            StringBuilder fileText = new StringBuilder();
+            long linesRead = 0;
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                fileText.append(line).append("\n");
+                updateProgress(++linesRead, linesToRead);
+            }
+            return fileText.toString();
             }
         };
         loadFileTask.setOnSucceeded(workerStateEvent -> {
-            //progressBar.setVisible(false);
             onSuccess.call();
             try {
                 handler.handle(loadFileTask.get());
                 statusMessageHandler.handle("Opened " + file.getName());
                 currentLoadedFile = file;
+                clearDirty();
             } catch (InterruptedException | ExecutionException e) {
                 statusMessageHandler.handle("Error opening file");
             }
         });
         loadFileTask.setOnFailed(workerStateEvent -> {
-            //progressBar.setVisible(false);
             onFail.call();
             statusMessageHandler.handle("Error opening file");
         });
         for (DoubleProperty prop : bindProperties) {
             prop.bind(loadFileTask.progressProperty());
         }
-//        progressBar.progressProperty().bind(loadFileTask.progressProperty());
         loadFileTask.run();
     }
 
