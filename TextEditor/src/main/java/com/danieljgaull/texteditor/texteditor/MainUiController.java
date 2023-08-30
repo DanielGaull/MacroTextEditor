@@ -73,9 +73,8 @@ public class MainUiController implements PrimaryStageAware {
 
     public void onTextChange(String oldText, String newText) {
         textEditorController.makeDirty();
-
-        // Mark that the file is not dirty anymore
-
+        newText = textEditorController.handleTextChange(oldText, newText);
+        mainField.setText(newText);
     }
 
     /*

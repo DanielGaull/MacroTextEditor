@@ -53,6 +53,10 @@ public class TextEditorController {
         }
     }
 
+    public String handleTextChange(String oldText, String newText) {
+        return newText;//.replaceAll("\\\\b", "...");
+    }
+
     public void save(String text) {
         try {
             if (currentLoadedFile == null) {
