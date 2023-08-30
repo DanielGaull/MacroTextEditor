@@ -51,6 +51,7 @@ public class MainUiController implements PrimaryStageAware {
                 keyCodeInitializer.initialize(mainField.getScene(), this);
             }
         });
+        mainField.setWrapText(true);
     }
 
     /*

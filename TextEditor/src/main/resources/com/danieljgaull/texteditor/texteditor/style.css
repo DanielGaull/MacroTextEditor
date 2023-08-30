@@ -1,0 +1,9 @@
+#mainField {
+    -fx-background-color: -fx-control-inner-background;
+    -fx-focus-color: transparent;
+    -fx-background-insets: 0;
+    -fx-faint-focus-color: transparent;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-margin: 0 0 0 0;
+}
