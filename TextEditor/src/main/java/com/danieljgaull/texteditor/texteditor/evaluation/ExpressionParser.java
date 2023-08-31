@@ -54,6 +54,18 @@ public class ExpressionParser {
     );
 
     public Ast parse(String input) {
+        if (input.length() <= 0) {
+            return null;
+        }
+        // See if the entire expression is wrapped in parentheses
+        if (input.charAt(0) == '(') {
+            int endPos = findClosingPosition(input, 0, '(', ')');
+            if (endPos == input.length()) {
+                // Extract the inner expression and parse that instead
+                return parse(input.substring(1, input.length() - 1));
+            }
+        }
+
         Matcher numberMatcher = NUMBER_REGEX.matcher(input);
         if (numberMatcher.find()) {
             String numStr = numberMatcher.group();
@@ -207,5 +219,32 @@ public class ExpressionParser {
             result.append("\\").append(c);
         }
         return result.toString();
+    }
+
+    public int findClosingPosition(String input, int startLoc, char start, char end) {
+        int level = 0;
+        boolean inString = false;
+        for (int i = startLoc + 1; i < input.length(); i++) {
+            char c = input.charAt(i);
+            if (inString) {
+                if (c == '"') {
+                    inString = false;
+                }
+            } else {
+                if (c == '"') {
+                    inString = true;
+                }
+                if (c == start) {
+                    level++;
+                }
+                if (c == end) {
+                    if (level == 0) {
+                        return i;
+                    }
+                    level--;
+                }
+            }
+        }
+        return -1;
     }
 }
