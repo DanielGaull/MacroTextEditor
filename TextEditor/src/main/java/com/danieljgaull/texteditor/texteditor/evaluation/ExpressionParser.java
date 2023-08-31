@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class ExpressionParser {
 
@@ -30,6 +31,9 @@ public class ExpressionParser {
     private final Pattern FUNCTION_CALL_REGEX = Pattern.compile("^(" + TOKEN_PATTERN + ")\\((.*)\\)$");
     private final char FUNCTION_ARG_SPLITTER = ',';
 
+    // The (\s*\S+\s*) is to match any string that contains non-whitespace, but will include the whitespace if found
+    private final Pattern TERNARY_CONDITIONAL_REGEX = Pattern.compile("^(\\S+.*)\\?(.*\\S+.*):(.*\\S+)$");
+
     private final List<Tuple<String, BinaryOperators>> binaryOperators = List.of(
             new Tuple<>("+", BinaryOperators.Addition),
             new Tuple<>("-", BinaryOperators.Subtraction),
@@ -47,9 +51,6 @@ public class ExpressionParser {
     private final List<Tuple<String, UnaryOperators>> unaryOperators = List.of(
             new Tuple<>("!", UnaryOperators.LogicalNegation),
             new Tuple<>("-", UnaryOperators.NumericNegation)
-    );
-    private final List<Truple<String, String, TernaryOperators>> ternaryOperators = List.of(
-            new Truple<>("?", ":", TernaryOperators.Conditional)
     );
 
     public Ast parse(String input) {
@@ -94,6 +95,56 @@ public class ExpressionParser {
                 argAsts.add(parse(arg.trim()));
             }
             return Ast.functionCall(funcName, argAsts);
+        }
+
+        // At this point we know we have some sort of operator expression. Build the regexes
+        // for each and determine what we have
+        String unaryOpPattern = "^(" +
+                unaryOperators.stream()
+                        .map(t -> escapeAll(t.first())) // Escape each character
+                        .collect(Collectors.joining("|")) +
+                ")(.*\\S+)$";
+        Pattern unaryOpRegex = Pattern.compile(unaryOpPattern);
+        Matcher unaryMatcher = unaryOpRegex.matcher(input);
+        if (unaryMatcher.find()) {
+            String operator = unaryMatcher.group(1);
+            String operand = unaryMatcher.group(2);
+            for (Tuple<String, UnaryOperators> tuple : unaryOperators) {
+                if (tuple.first().equals(operator)) {
+                    return Ast.unary(parse(operand.trim()), tuple.second());
+                }
+            }
+            // Somehow failed even though operator should have been found??
+            return null;
+        }
+
+        String binaryOpPattern = "^(\\S+.*)(" +
+                binaryOperators.stream()
+                        .map(t -> escapeAll(t.first())) // Escape each character
+                        .collect(Collectors.joining("|")) +
+                ")(.*\\S+)$";
+        Pattern binaryOpRegex = Pattern.compile(binaryOpPattern);
+        Matcher binaryMatcher = binaryOpRegex.matcher(input);
+        if (binaryMatcher.find()) {
+            String operand1 = binaryMatcher.group(1);
+            String operator = binaryMatcher.group(2);
+            String operand2 = binaryMatcher.group(3);
+            for (Tuple<String, BinaryOperators> tuple : binaryOperators) {
+                if (tuple.first().equals(operator)) {
+                    return Ast.binary(parse(operand1.trim()), parse(operand2.trim()), tuple.second());
+                }
+            }
+            // Somehow failed even though operator should have been found??
+            return null;
+        }
+
+        Matcher ternaryMatcher = TERNARY_CONDITIONAL_REGEX.matcher(input);
+        if (ternaryMatcher.find()) {
+            String operand1 = ternaryMatcher.group(1);
+            String operand2 = ternaryMatcher.group(2);
+            String operand3 = ternaryMatcher.group(3);
+            return Ast.ternary(parse(operand1.trim()), parse(operand2.trim()), parse(operand3.trim()),
+                    TernaryOperators.Conditional);
         }
 
         return null;
@@ -149,4 +200,12 @@ public class ExpressionParser {
         return results;
     }
 
+    private String escapeAll(String input) {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
+            result.append("\\").append(c);
+        }
+        return result.toString();
+    }
 }
