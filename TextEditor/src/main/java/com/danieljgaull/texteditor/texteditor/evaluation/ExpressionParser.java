@@ -31,7 +31,7 @@ public class ExpressionParser {
     private final Pattern FUNCTION_CALL_REGEX = Pattern.compile("^(" + TOKEN_PATTERN + ")\\((.*)\\)$");
     private final char FUNCTION_ARG_SPLITTER = ',';
 
-    // The (\s*\S+\s*) is to match any string that contains non-whitespace, but will include the whitespace if found
+    // The (.*\S+.*) is to match any string that contains non-whitespace, but will include the whitespace if found
     private final Pattern TERNARY_CONDITIONAL_REGEX = Pattern.compile("^(\\S+.*)\\?(.*\\S+.*):(.*\\S+)$");
 
     private final List<Tuple<String, BinaryOperators>> binaryOperators = List.of(
