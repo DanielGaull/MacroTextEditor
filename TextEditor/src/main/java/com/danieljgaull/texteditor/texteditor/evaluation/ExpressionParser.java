@@ -35,10 +35,10 @@ public class ExpressionParser {
     private final Pattern TERNARY_CONDITIONAL_REGEX = Pattern.compile("^(\\S+.*)\\?(.*\\S+.*):(.*\\S+)$");
 
     private final List<Tuple<String, BinaryOperators>> binaryOperators = List.of(
-            new Tuple<>("+", BinaryOperators.Addition),
-            new Tuple<>("-", BinaryOperators.Subtraction),
             new Tuple<>("*", BinaryOperators.Multiplication),
             new Tuple<>("/", BinaryOperators.Division),
+            new Tuple<>("+", BinaryOperators.Addition),
+            new Tuple<>("-", BinaryOperators.Subtraction),
             new Tuple<>("&&", BinaryOperators.LogicalAnd),
             new Tuple<>("||", BinaryOperators.LogicalOr),
             new Tuple<>("==", BinaryOperators.IsEqual),
