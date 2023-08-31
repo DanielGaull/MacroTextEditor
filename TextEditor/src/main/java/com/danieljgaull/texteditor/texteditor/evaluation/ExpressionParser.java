@@ -1,6 +1,11 @@
 package com.danieljgaull.texteditor.texteditor.evaluation;
 
 import com.danieljgaull.texteditor.texteditor.expressions.Ast;
+import com.danieljgaull.texteditor.texteditor.expressions.BinaryOperators;
+import com.danieljgaull.texteditor.texteditor.expressions.TernaryOperators;
+import com.danieljgaull.texteditor.texteditor.expressions.UnaryOperators;
+import com.danieljgaull.texteditor.texteditor.util.Truple;
+import com.danieljgaull.texteditor.texteditor.util.Tuple;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +29,28 @@ public class ExpressionParser {
 
     private final Pattern FUNCTION_CALL_REGEX = Pattern.compile("^(" + TOKEN_PATTERN + ")\\((.*)\\)$");
     private final char FUNCTION_ARG_SPLITTER = ',';
+
+    private final List<Tuple<String, BinaryOperators>> binaryOperators = List.of(
+            new Tuple<>("+", BinaryOperators.Addition),
+            new Tuple<>("-", BinaryOperators.Subtraction),
+            new Tuple<>("*", BinaryOperators.Multiplication),
+            new Tuple<>("/", BinaryOperators.Division),
+            new Tuple<>("&&", BinaryOperators.LogicalAnd),
+            new Tuple<>("||", BinaryOperators.LogicalOr),
+            new Tuple<>("==", BinaryOperators.IsEqual),
+            new Tuple<>("!=", BinaryOperators.IsNotEqual),
+            new Tuple<>(">", BinaryOperators.IsGreaterThan),
+            new Tuple<>("<", BinaryOperators.IsLessThan),
+            new Tuple<>(">=", BinaryOperators.IsGreaterThanOrEqual),
+            new Tuple<>("<=", BinaryOperators.IsLessThanOrEqual)
+    );
+    private final List<Tuple<String, UnaryOperators>> unaryOperators = List.of(
+            new Tuple<>("!", UnaryOperators.LogicalNegation),
+            new Tuple<>("-", UnaryOperators.NumericNegation)
+    );
+    private final List<Truple<String, String, TernaryOperators>> ternaryOperators = List.of(
+            new Truple<>("?", ":", TernaryOperators.Conditional)
+    );
 
     public Ast parse(String input) {
         Matcher numberMatcher = NUMBER_REGEX.matcher(input);
