@@ -31,6 +31,9 @@ public class ExpressionParser {
     private final Pattern FUNCTION_CALL_REGEX = Pattern.compile("^(" + TOKEN_PATTERN + ")\\((.*)\\)$");
     private final char FUNCTION_ARG_SPLITTER = ',';
 
+    private final char OPEN_PAREN = '(';
+    private final char CLOSE_PAREN = ')';
+
     // The (.*\S+.*) is to match any string that contains non-whitespace, but will include the whitespace if found
     private final Pattern TERNARY_CONDITIONAL_REGEX = Pattern.compile("^(\\S+.*)\\?(.*\\S+.*):(.*\\S+)$");
 
@@ -58,9 +61,9 @@ public class ExpressionParser {
             return null;
         }
         // See if the entire expression is wrapped in parentheses
-        if (input.charAt(0) == '(') {
-            int endPos = findClosingPosition(input, 0, '(', ')');
-            if (endPos == input.length()) {
+        if (input.charAt(0) == OPEN_PAREN) {
+            int endPos = findClosingPosition(input, 0, OPEN_PAREN, CLOSE_PAREN);
+            if (endPos == input.length() - 1) {
                 // Extract the inner expression and parse that instead
                 return parse(input.substring(1, input.length() - 1));
             }
@@ -139,24 +142,11 @@ public class ExpressionParser {
             return null;
         }
 
-        String binaryOpPattern = "^(\\S+.*)(" +
-                binaryOperators.stream()
-                        .map(t -> escapeAll(t.first())) // Escape each character
-                        .collect(Collectors.joining("|")) +
-                ")(.*\\S+)$";
-        Pattern binaryOpRegex = Pattern.compile(binaryOpPattern);
-        Matcher binaryMatcher = binaryOpRegex.matcher(input);
-        if (binaryMatcher.find()) {
-            String operand1 = binaryMatcher.group(1);
-            String operator = binaryMatcher.group(2);
-            String operand2 = binaryMatcher.group(3);
-            for (Tuple<String, BinaryOperators> tuple : binaryOperators) {
-                if (tuple.first().equals(operator)) {
-                    return Ast.binary(parse(operand1.trim()), parse(operand2.trim()), tuple.second());
-                }
-            }
-            // Somehow failed even though operator should have been found??
-            return null;
+        BinaryOperatorMatch binaryOperatorMatch = matchBinaryOperator(input);
+        if (binaryOperatorMatch.matches) {
+            String operand1 = binaryOperatorMatch.first;
+            String operand2 = binaryOperatorMatch.second;
+            return Ast.binary(parse(operand1.trim()), parse(operand2.trim()), binaryOperatorMatch.operator);
         }
 
         return null;
@@ -221,7 +211,7 @@ public class ExpressionParser {
         return result.toString();
     }
 
-    public int findClosingPosition(String input, int startLoc, char start, char end) {
+    private int findClosingPosition(String input, int startLoc, char start, char end) {
         int level = 0;
         boolean inString = false;
         for (int i = startLoc + 1; i < input.length(); i++) {
@@ -246,5 +236,61 @@ public class ExpressionParser {
             }
         }
         return -1;
+    }
+
+    private BinaryOperatorMatch matchBinaryOperator(String input) {
+        boolean inString = false;
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
+            if (inString) {
+                if (c == '"') {
+                    inString = false;
+                }
+            } else {
+                if (c == '"') {
+                    inString = true;
+                    continue;
+                }
+                if (c == OPEN_PAREN) {
+                    int endPoint = findClosingPosition(input, i, OPEN_PAREN, CLOSE_PAREN);
+                    if (endPoint >= 0) {
+                        i = endPoint;
+                        continue;
+                    } else {
+                        // Return; we have unbalanced parentheses
+                        break;
+                    }
+                }
+                // See if there's an operator at this point. If so, make our groups
+                for (Tuple<String, BinaryOperators> tuple : binaryOperators) {
+                    if (input.substring(i).startsWith(tuple.first())) {
+                        // We've got a match
+                        // The first part is from the beginning of the string to this location
+                        String first = input.substring(0, i);
+                        String second = input.substring(i + tuple.first().length());
+                        return new BinaryOperatorMatch(tuple.second(), first, second);
+                    }
+                }
+            }
+        }
+        return new BinaryOperatorMatch();
+    }
+
+    private class BinaryOperatorMatch {
+        boolean matches;
+        BinaryOperators operator;
+        String first;
+        String second;
+
+        private BinaryOperatorMatch() {
+            matches = false;
+        }
+        private BinaryOperatorMatch(BinaryOperators op, String f, String s) {
+            operator = op;
+            first = f;
+            second = s;
+            matches = true;
+        }
+
     }
 }
