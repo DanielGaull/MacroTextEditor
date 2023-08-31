@@ -97,6 +97,15 @@ public class ExpressionParser {
             return Ast.functionCall(funcName, argAsts);
         }
 
+        Matcher ternaryMatcher = TERNARY_CONDITIONAL_REGEX.matcher(input);
+        if (ternaryMatcher.find()) {
+            String operand1 = ternaryMatcher.group(1);
+            String operand2 = ternaryMatcher.group(2);
+            String operand3 = ternaryMatcher.group(3);
+            return Ast.ternary(parse(operand1.trim()), parse(operand2.trim()), parse(operand3.trim()),
+                    TernaryOperators.Conditional);
+        }
+
         // At this point we know we have some sort of operator expression. Build the regexes
         // for each and determine what we have
         String unaryOpPattern = "^(" +
@@ -136,15 +145,6 @@ public class ExpressionParser {
             }
             // Somehow failed even though operator should have been found??
             return null;
-        }
-
-        Matcher ternaryMatcher = TERNARY_CONDITIONAL_REGEX.matcher(input);
-        if (ternaryMatcher.find()) {
-            String operand1 = ternaryMatcher.group(1);
-            String operand2 = ternaryMatcher.group(2);
-            String operand3 = ternaryMatcher.group(3);
-            return Ast.ternary(parse(operand1.trim()), parse(operand2.trim()), parse(operand3.trim()),
-                    TernaryOperators.Conditional);
         }
 
         return null;
