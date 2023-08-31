@@ -1,6 +1,6 @@
 package com.danieljgaull.texteditor.texteditor.expressions;
 
-public enum DataType {
+public enum DataTypes {
     String,
     Number,
     Boolean,
