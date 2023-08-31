@@ -1,5 +1,7 @@
 package com.danieljgaull.texteditor.texteditor;
 
+import com.danieljgaull.texteditor.texteditor.instruction.Instruction;
+import com.danieljgaull.texteditor.texteditor.instruction.InstructionParser;
 import com.danieljgaull.texteditor.texteditor.util.PrimaryStageAware;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -29,6 +31,10 @@ public class MainApplication extends Application {
         stage.setTitle("Text Editor");
         stage.setScene(scene);
         stage.show();
+
+        InstructionParser parser = new InstructionParser();
+        Instruction result = parser.parse("insert (\"-\" * size) (\"-\" * size)");
+        System.out.println();
     }
 
     public static void main(String[] args) {
