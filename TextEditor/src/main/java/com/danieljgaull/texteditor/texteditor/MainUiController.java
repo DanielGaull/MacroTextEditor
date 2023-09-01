@@ -1,13 +1,12 @@
 package com.danieljgaull.texteditor.texteditor;
 
 import com.danieljgaull.texteditor.texteditor.util.PrimaryStageAware;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
@@ -16,7 +15,7 @@ import java.util.List;
 
 public class MainUiController implements PrimaryStageAware {
     @FXML
-    private TextArea mainField;
+    private TextArea textArea;
     @FXML
     private ProgressBar progressBar;
     @FXML
@@ -42,19 +41,20 @@ public class MainUiController implements PrimaryStageAware {
                 str -> modeText.setText("Mode: " + str)
         );
 
-        mainField.textProperty().addListener((observableValue, oldValue, newValue) -> {
-            onTextChange(oldValue, newValue);
-        });
-        mainField.setFont(Font.font("Consolas", FontWeight.NORMAL, 13));
+        textArea.setTextFormatter(new TextFormatter<String>(change -> {
+            System.out.println(change.getText());
+            return change;//onTextChange(change);
+        }));
+        textArea.setFont(Font.font("Consolas", FontWeight.NORMAL, 13));
 
         KeyCodeInitializer keyCodeInitializer = new KeyCodeInitializer();
 
-        mainField.sceneProperty().addListener((observable, oldScene, newScene) -> {
+        textArea.sceneProperty().addListener((observable, oldScene, newScene) -> {
             if (newScene != null) {
-                keyCodeInitializer.initialize(mainField.getScene(), this);
+                keyCodeInitializer.initialize(textArea.getScene(), this);
             }
         });
-        mainField.setWrapText(true);
+        textArea.setWrapText(true);
     }
 
     /*
@@ -74,22 +74,22 @@ public class MainUiController implements PrimaryStageAware {
     public void onTextChange(String oldText, String newText) {
         textEditorController.makeDirty();
         newText = textEditorController.handleTextChange(oldText, newText);
-        mainField.setText(newText);
+        textArea.setText(newText);
     }
 
     /*
      * Helper Methods
      */
     public void save() {
-        textEditorController.save(mainField.getText());
+        textEditorController.save(textArea.getText());
     }
 
     public void saveAs() {
-        textEditorController.saveAs(mainField.getText());
+        textEditorController.saveAs(textArea.getText());
     }
 
     public void open() {
-        textEditorController.open(txt -> mainField.setText(txt),
+        textEditorController.open(txt -> textArea.setText(txt),
                 () -> progressBar.setVisible(true), () -> progressBar.setVisible(false),
                 () -> progressBar.setVisible(false),
                 List.of(progressBar.progressProperty()));

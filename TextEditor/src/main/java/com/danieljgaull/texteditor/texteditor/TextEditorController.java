@@ -4,12 +4,14 @@ import com.danieljgaull.texteditor.texteditor.handlers.Action;
 import com.danieljgaull.texteditor.texteditor.handlers.FileContentsLoadedHandler;
 import com.danieljgaull.texteditor.texteditor.handlers.MessageHandler;
 import com.danieljgaull.texteditor.texteditor.modes.Modes;
+import com.danieljgaull.texteditor.texteditor.text.TextLine;
 import javafx.beans.property.DoubleProperty;
 import javafx.concurrent.Task;
 import javafx.stage.FileChooser;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
@@ -24,6 +26,8 @@ public class TextEditorController {
     private boolean isDirty;
     private Modes modes;
 
+    private List<TextLine> lines;
+
     public TextEditorController(MessageHandler statusMessageHandler, MessageHandler titleChangeHandler,
                                 MessageHandler modeChangeHandler) {
         this.statusMessageHandler = statusMessageHandler;
@@ -35,6 +39,8 @@ public class TextEditorController {
         modes = new Modes();
 
         modeChangeHandler.handle(modes.getMode().getName());
+
+        lines = new ArrayList<>();
     }
 
     public void makeDirty() {
