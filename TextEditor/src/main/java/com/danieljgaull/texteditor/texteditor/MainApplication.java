@@ -1,7 +1,7 @@
 package com.danieljgaull.texteditor.texteditor;
 
-import com.danieljgaull.texteditor.texteditor.instruction.Instruction;
-import com.danieljgaull.texteditor.texteditor.instruction.InstructionParser;
+import com.danieljgaull.texteditor.texteditor.macro.Macro;
+import com.danieljgaull.texteditor.texteditor.macro.MacroParser;
 import com.danieljgaull.texteditor.texteditor.util.PrimaryStageAware;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -32,8 +32,9 @@ public class MainApplication extends Application {
         stage.setScene(scene);
         stage.show();
 
-        InstructionParser parser = new InstructionParser();
-        Instruction result = parser.parse("insert (\"-\" * size) (\"-\" * other_size)");
+        MacroParser parser = new MacroParser();
+        Macro result = parser.parse("macro header ( size : number )\n" +
+                "insert (\"-\" * size) (\"-\" * size)\n" + "endmacro");
         System.out.println();
     }
 
