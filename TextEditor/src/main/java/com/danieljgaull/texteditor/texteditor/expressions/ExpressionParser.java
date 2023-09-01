@@ -81,7 +81,7 @@ public class ExpressionParser {
         Matcher stringMatcher = STRING_REGEX.matcher(input);
         if (stringMatcher.find()) {
             String value = stringMatcher.group();
-            return Ast.string(value);
+            return Ast.string(value.replace("\\\\", "\\"));
         }
 
         Matcher boolMatcher = BOOLEAN_REGEX.matcher(input);
@@ -164,7 +164,7 @@ public class ExpressionParser {
         for (int i = 0; i < source.length(); i++) {
             char c = source.charAt(i);
             if (inString) {
-                if (c == STRING_END && source.charAt(i - 1) != '\\') {
+                if (c == STRING_END && source.charAt(i - 1) != '\\' && source.charAt(i - 2) != '\\') {
                     // We've found our closing quote, and it has not been escaped
                     inString = false;
                 }
@@ -219,7 +219,7 @@ public class ExpressionParser {
         for (int i = startLoc + 1; i < input.length(); i++) {
             char c = input.charAt(i);
             if (inString) {
-                if (c == STRING_END && input.charAt(i - 1) != '\\') {
+                if (c == STRING_END && input.charAt(i - 1) != '\\' && input.charAt(i - 2) != '\\') {
                     inString = false;
                 }
             } else {
@@ -245,7 +245,7 @@ public class ExpressionParser {
         for (int i = 0; i < input.length(); i++) {
             char c = input.charAt(i);
             if (inString) {
-                if (c == STRING_END && input.charAt(i - 1) != '\\') {
+                if (c == STRING_END && input.charAt(i - 1) != '\\' && input.charAt(i - 2) != '\\') {
                     inString = false;
                 }
             } else {

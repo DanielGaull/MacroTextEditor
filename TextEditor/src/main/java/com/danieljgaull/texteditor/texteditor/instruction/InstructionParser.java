@@ -47,7 +47,7 @@ public class InstructionParser {
         for (int i = 0; i < input.length(); i++) {
             char c = input.charAt(i);
             if (inString) {
-                if (c == STRING_END && input.charAt(i - 1) != '\\') {
+                if (c == STRING_END && input.charAt(i - 1) != '\\' && input.charAt(i - 2) != '\\') {
                     inString = false;
                 }
             } else {

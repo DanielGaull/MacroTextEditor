@@ -1,5 +1,7 @@
 package com.danieljgaull.texteditor.texteditor;
 
+import com.danieljgaull.texteditor.texteditor.expressions.Ast;
+import com.danieljgaull.texteditor.texteditor.expressions.ExpressionParser;
 import com.danieljgaull.texteditor.texteditor.macro.Macro;
 import com.danieljgaull.texteditor.texteditor.macro.MacroParser;
 import com.danieljgaull.texteditor.texteditor.util.PrimaryStageAware;
@@ -35,6 +37,7 @@ public class MainApplication extends Application {
         MacroParser parser = new MacroParser();
         Macro result = parser.parse("macro header ( size : number )\n" +
                 "insert (\"-\" * size) (\"-\" * size)\n" + "endmacro");
+        Ast test = new ExpressionParser().parse("\"\\\\\"");
         System.out.println();
     }
 
