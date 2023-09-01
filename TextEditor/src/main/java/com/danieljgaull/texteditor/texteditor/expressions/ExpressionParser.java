@@ -1,4 +1,4 @@
-package com.danieljgaull.texteditor.texteditor.evaluation;
+package com.danieljgaull.texteditor.texteditor.expressions;
 
 import com.danieljgaull.texteditor.texteditor.expressions.Ast;
 import com.danieljgaull.texteditor.texteditor.expressions.BinaryOperators;
@@ -15,29 +15,31 @@ import java.util.stream.Collectors;
 
 public class ExpressionParser {
 
-    private final Pattern NUMBER_REGEX = Pattern.compile("^[+-]?(([0-9]+(\\.[0-9]*)?)|(\\.[0-9]+))$");
+    private static final Pattern NUMBER_REGEX = Pattern.compile("^[+-]?(([0-9]+(\\.[0-9]*)?)|(\\.[0-9]+))$");
     // This is the raw regex: ^"((?:[^"]|\\")*)"$
     // The backslashes make it hard to see what's going on
     // Makes a group, capturing any non-quote character OR a \"
-    private final Pattern STRING_REGEX = Pattern.compile("^\"((?:[^\"]|\\\\\")*)\"$");
+    private static final Pattern STRING_REGEX = Pattern.compile("^\"((?:[^\"]|\\\\\")*)\"$");
 
-    private final String TRUE_VALUE = "true";
-    private final String FALSE_VALUE = "false";
-    private final Pattern BOOLEAN_REGEX = Pattern.compile("^(" + TRUE_VALUE + "|" + FALSE_VALUE + ")$");
+    private static final String TRUE_VALUE = "true";
+    private static final String FALSE_VALUE = "false";
+    private static final Pattern BOOLEAN_REGEX = Pattern.compile("^(" + TRUE_VALUE + "|" + FALSE_VALUE + ")$");
 
-    private final String TOKEN_PATTERN = "[a-zA-Z_][a-zA-Z0-9_]*";
-    private final Pattern TOKEN_REGEX = Pattern.compile("^(" + TOKEN_PATTERN + ")$");
+    private static final String TOKEN_PATTERN = "[a-zA-Z_][a-zA-Z0-9_]*";
+    private static final Pattern TOKEN_REGEX = Pattern.compile("^(" + TOKEN_PATTERN + ")$");
 
-    private final Pattern FUNCTION_CALL_REGEX = Pattern.compile("^(" + TOKEN_PATTERN + ")\\((.*)\\)$");
-    private final char FUNCTION_ARG_SPLITTER = ',';
+    private static final Pattern FUNCTION_CALL_REGEX = Pattern.compile("^(" + TOKEN_PATTERN + ")\\((.*)\\)$");
+    private static final char FUNCTION_ARG_SPLITTER = ',';
 
-    private final char OPEN_PAREN = '(';
-    private final char CLOSE_PAREN = ')';
+    private static final char OPEN_PAREN = '(';
+    private static final char CLOSE_PAREN = ')';
+    private static final char STRING_START = '"';
+    private static final char STRING_END = '"';
 
     // The (.*\S+.*) is to match any string that contains non-whitespace, but will include the whitespace if found
-    private final Pattern TERNARY_CONDITIONAL_REGEX = Pattern.compile("^(\\S+.*)\\?(.*\\S+.*):(.*\\S+)$");
+    private static final Pattern TERNARY_CONDITIONAL_REGEX = Pattern.compile("^(\\S+.*)\\?(.*\\S+.*):(.*\\S+)$");
 
-    private final List<Tuple<String, BinaryOperators>> binaryOperators = List.of(
+    private static final List<Tuple<String, BinaryOperators>> binaryOperators = List.of(
             new Tuple<>("*", BinaryOperators.Multiplication),
             new Tuple<>("/", BinaryOperators.Division),
             new Tuple<>("+", BinaryOperators.Addition),
@@ -51,7 +53,7 @@ public class ExpressionParser {
             new Tuple<>(">=", BinaryOperators.IsGreaterThanOrEqual),
             new Tuple<>("<=", BinaryOperators.IsLessThanOrEqual)
     );
-    private final List<Tuple<String, UnaryOperators>> unaryOperators = List.of(
+    private static final List<Tuple<String, UnaryOperators>> unaryOperators = List.of(
             new Tuple<>("!", UnaryOperators.LogicalNegation),
             new Tuple<>("-", UnaryOperators.NumericNegation)
     );
@@ -152,7 +154,7 @@ public class ExpressionParser {
         return null;
     }
 
-    private List<String> split(String source, char delimiter) {
+    private static List<String> split(String source, char delimiter) {
         int parenLevel = 0;
         int bracketLevel = 0;
         int braceLevel = 0;
@@ -162,7 +164,7 @@ public class ExpressionParser {
         for (int i = 0; i < source.length(); i++) {
             char c = source.charAt(i);
             if (inString) {
-                if (c == '"' && source.charAt(i-1) != '\\') {
+                if (c == STRING_END && source.charAt(i - 1) != '\\') {
                     // We've found our closing quote, and it has not been escaped
                     inString = false;
                 }
@@ -185,7 +187,7 @@ public class ExpressionParser {
                 if (c == '}') {
                     braceLevel--;
                 }
-                if (c == '"') {
+                if (c == STRING_START) {
                     inString = true;
                 }
             }
@@ -202,7 +204,7 @@ public class ExpressionParser {
         return results;
     }
 
-    private String escapeAll(String input) {
+    private static String escapeAll(String input) {
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < input.length(); i++) {
             char c = input.charAt(i);
@@ -211,17 +213,17 @@ public class ExpressionParser {
         return result.toString();
     }
 
-    private int findClosingPosition(String input, int startLoc, char start, char end) {
+    private static int findClosingPosition(String input, int startLoc, char start, char end) {
         int level = 0;
         boolean inString = false;
         for (int i = startLoc + 1; i < input.length(); i++) {
             char c = input.charAt(i);
             if (inString) {
-                if (c == '"') {
+                if (c == STRING_END && input.charAt(i - 1) != '\\') {
                     inString = false;
                 }
             } else {
-                if (c == '"') {
+                if (c == STRING_START) {
                     inString = true;
                 }
                 if (c == start) {
@@ -238,16 +240,16 @@ public class ExpressionParser {
         return -1;
     }
 
-    private BinaryOperatorMatch matchBinaryOperator(String input) {
+    private static BinaryOperatorMatch matchBinaryOperator(String input) {
         boolean inString = false;
         for (int i = 0; i < input.length(); i++) {
             char c = input.charAt(i);
             if (inString) {
-                if (c == '"') {
+                if (c == STRING_END && input.charAt(i - 1) != '\\') {
                     inString = false;
                 }
             } else {
-                if (c == '"') {
+                if (c == STRING_START) {
                     inString = true;
                     continue;
                 }
@@ -276,7 +278,7 @@ public class ExpressionParser {
         return new BinaryOperatorMatch();
     }
 
-    private class BinaryOperatorMatch {
+    private static class BinaryOperatorMatch {
         boolean matches;
         BinaryOperators operator;
         String first;
@@ -291,6 +293,5 @@ public class ExpressionParser {
             second = s;
             matches = true;
         }
-
     }
 }

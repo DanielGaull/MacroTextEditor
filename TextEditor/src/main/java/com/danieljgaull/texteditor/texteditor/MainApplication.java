@@ -33,7 +33,7 @@ public class MainApplication extends Application {
         stage.show();
 
         InstructionParser parser = new InstructionParser();
-        Instruction result = parser.parse("insert (\"-\" * size) (\"-\" * size)");
+        Instruction result = parser.parse("insert (\"-\" * size) (\"-\" * other_size)");
         System.out.println();
     }
 
