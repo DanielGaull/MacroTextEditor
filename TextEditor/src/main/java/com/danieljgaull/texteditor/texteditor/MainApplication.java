@@ -33,12 +33,6 @@ public class MainApplication extends Application {
         stage.setTitle("Text Editor");
         stage.setScene(scene);
         stage.show();
-
-        MacroParser parser = new MacroParser();
-        Macro result = parser.parse("macro header ( size : number )\n" +
-                "insert (\"-\" * size) (\"-\" * size)\n" + "endmacro");
-        Ast test = new ExpressionParser().parse("\"\\\\\"");
-        System.out.println();
     }
 
     public static void main(String[] args) {

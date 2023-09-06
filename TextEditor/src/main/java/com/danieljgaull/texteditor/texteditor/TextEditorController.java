@@ -70,6 +70,10 @@ public class TextEditorController {
             String newLineText = line.getRawText().substring(lineCaretPos);
             lines.add(linePos, new TextLine(line.getLineMode(), newLineText, line.copyLineData()));
             line.setRawText(currentLineText);
+        } else {
+            // Insert the newly-typed text at this location
+            // TODO: this is where we'll detect macros
+
         }
         // TODO: Modify the edited line accordingly, following the lineCaretPos
     }
