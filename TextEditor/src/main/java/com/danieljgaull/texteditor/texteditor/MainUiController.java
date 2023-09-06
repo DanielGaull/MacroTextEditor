@@ -48,7 +48,6 @@ public class MainUiController implements PrimaryStageAware {
             // TODO: Remember to handle prefix/suffix text properly with this
             int startOfLineIndex = StringUtils.lastIndexOfChar(textArea.getText(), change.getCaretPosition(), '\n');
             TextChange textChange = null;
-            System.out.println(change.getText().equals("\n"));
             if (change.getText().equals("\n")) {
                 textChange = TextChange.newLine();
             } else {

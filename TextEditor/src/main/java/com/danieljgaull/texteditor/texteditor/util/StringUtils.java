@@ -10,7 +10,7 @@ public class StringUtils {
     }
     public static int countChar(String str, int endIndex, char c) {
         int count = 0;
-        for (int i = 0; i < endIndex; i++) {
+        for (int i = 0; i < endIndex && i < str.length(); i++) {
             if (str.charAt(i) == c) {
                 count++;
             }
@@ -20,7 +20,7 @@ public class StringUtils {
 
     public static int lastIndexOfChar(String str, int endIndex, char c) {
         int lastIndex = -1;
-        for (int i = 0; i < endIndex; i++) {
+        for (int i = 0; i < endIndex && i < str.length(); i++) {
             if (str.charAt(i) == c) {
                 lastIndex = i;
             }
