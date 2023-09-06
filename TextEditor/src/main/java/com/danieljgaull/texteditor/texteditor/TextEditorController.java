@@ -3,7 +3,9 @@ package com.danieljgaull.texteditor.texteditor;
 import com.danieljgaull.texteditor.texteditor.handlers.Action;
 import com.danieljgaull.texteditor.texteditor.handlers.FileContentsLoadedHandler;
 import com.danieljgaull.texteditor.texteditor.handlers.MessageHandler;
+import com.danieljgaull.texteditor.texteditor.modes.Mode;
 import com.danieljgaull.texteditor.texteditor.modes.Modes;
+import com.danieljgaull.texteditor.texteditor.text.LineData;
 import com.danieljgaull.texteditor.texteditor.text.TextChange;
 import com.danieljgaull.texteditor.texteditor.text.TextLine;
 import javafx.beans.property.DoubleProperty;
@@ -39,9 +41,11 @@ public class TextEditorController {
         clearDirty();
         modes = new Modes();
 
-        modeChangeHandler.handle(modes.getMode().getName());
+        //modeChangeHandler.handle(modes.getMode().getName());
 
         lines = new ArrayList<>();
+        // Add our first, empty line
+        lines.add(new TextLine(modes.getMode("Default"), "", new LineData()));
     }
 
     public void makeDirty() {
@@ -62,18 +66,24 @@ public class TextEditorController {
 
     public void handleTextChange(TextChange inChange, int lineCaretPos, int linePos) {
         makeDirty(); // TODO: Only make dirty if needed
+        // TODO: make sure we take off the prefix/suffix text in calculating lineCaretPos
 
         if (inChange.isNewLine()) {
             // Just need to add a new line
             TextLine line = lines.get(linePos);
             String currentLineText = line.getRawText().substring(0, lineCaretPos);
             String newLineText = line.getRawText().substring(lineCaretPos);
-            lines.add(linePos, new TextLine(line.getLineMode(), newLineText, line.copyLineData()));
+            lines.add(linePos + 1, new TextLine(line.getLineMode(), newLineText, line.copyLineData()));
             line.setRawText(currentLineText);
         } else {
             // Insert the newly-typed text at this location
-            // TODO: this is where we'll detect macros
-
+            // TODO: this is where we'll detect macros (if the new text is only a backslash)
+            TextLine line = lines.get(linePos);
+            String lineText = line.getRawText();
+            String textBefore = lineText.substring(0, lineCaretPos);
+            String textAfter = lineText.substring(lineCaretPos);
+            String newLineText = textBefore + inChange.getText() + textAfter;
+            line.setRawText(newLineText);
         }
         // TODO: Modify the edited line accordingly, following the lineCaretPos
     }

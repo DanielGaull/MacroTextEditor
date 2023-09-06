@@ -27,6 +27,8 @@ public class MainUiController implements PrimaryStageAware {
 
     private Stage stage;
 
+    private boolean muteTextFormatter = false;
+
     private TextEditorController textEditorController;
 
     public void initialize() {
@@ -44,9 +46,17 @@ public class MainUiController implements PrimaryStageAware {
         );
 
         textArea.setTextFormatter(new TextFormatter<String>(change -> {
-            int linePosition = StringUtils.countChar(textArea.getText(), change.getCaretPosition(), '\n');
+            if (muteTextFormatter) {
+                return change;
+            }
+
+            int linePosition = StringUtils.countChar(textArea.getText(),
+                    change.getCaretPosition() - change.getText().length(), '\n');
             // TODO: Remember to handle prefix/suffix text properly with this
-            int startOfLineIndex = StringUtils.lastIndexOfChar(textArea.getText(), change.getCaretPosition(), '\n');
+            // TODO: Handle text deletion
+            int startOfLineIndex = StringUtils.lastIndexOfChar(textArea.getText(),
+                    change.getCaretPosition() - change.getText().length(), '\n');
+            if (startOfLineIndex < 0) startOfLineIndex = 0;
             TextChange textChange = null;
             if (change.getText().equals("\n")) {
                 textChange = TextChange.newLine();
@@ -54,11 +64,16 @@ public class MainUiController implements PrimaryStageAware {
                 textChange = TextChange.typeText(change.getText());
             }
             textEditorController.handleTextChange(textChange,
-                    change.getCaretPosition() - startOfLineIndex, linePosition);
+                    change.getCaretPosition() - startOfLineIndex - change.getText().length(),
+                    linePosition);
             String fullText = textEditorController.buildText();
+            muteTextFormatter = true; // Don't trigger ourselves again with this change
+            textArea.setText(fullText);
+            muteTextFormatter = false;
 
             // Change the change to fit
-
+            change.setText("");
+            change.setAnchor(change.getCaretPosition());
             return change;
         }));
         textArea.setFont(Font.font("Consolas", FontWeight.NORMAL, 13));
