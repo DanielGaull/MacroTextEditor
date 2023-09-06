@@ -85,7 +85,6 @@ public class TextEditorController {
                 lineText = lineText.substring(0, change.getRangeStart()) + lineText.substring(change.getRangeEnd());
             }
             if (change.isLineDelete()) {
-                // TODO: Get the new text for the start line by taking the end line's text and combining them
                 TextLine startLine = lines.get(change.getLineStart());
                 TextLine endLine = lines.get(change.getLineEnd());
                 String newStartLineText = startLine.getRawText().substring(0, change.getRangeStart()) +

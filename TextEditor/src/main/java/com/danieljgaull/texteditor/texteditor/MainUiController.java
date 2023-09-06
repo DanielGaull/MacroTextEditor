@@ -68,7 +68,6 @@ public class MainUiController implements PrimaryStageAware {
             } else {
                 textChange = new TextChange().type(change.getText());
                 if (change.isDeleted()) {
-                    // TODO: Handle deleting lines. Must look at the start and end to determine which lines to remove
                     // If there are any \n in the deleted range, we need to do a delete lines
                     // Otherwise, we can just delete within a single line
                     if (currentText.substring(change.getRangeStart(), change.getRangeEnd()).contains("\n")) {
