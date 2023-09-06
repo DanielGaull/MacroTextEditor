@@ -71,6 +71,7 @@ public class TextEditorController {
             lines.add(linePos, new TextLine(line.getLineMode(), newLineText, line.copyLineData()));
             line.setRawText(currentLineText);
         }
+        // TODO: Modify the edited line accordingly, following the lineCaretPos
     }
 
     public String buildText() {
