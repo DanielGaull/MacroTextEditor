@@ -84,6 +84,19 @@ public class TextEditorController {
                 // First, remove the deleted range. Then we can add the new text
                 lineText = lineText.substring(0, change.getRangeStart()) + lineText.substring(change.getRangeEnd());
             }
+            if (change.isLineDelete()) {
+                // TODO: Get the new text for the start line by taking the end line's text and combining them
+                TextLine startLine = lines.get(change.getLineStart());
+                TextLine endLine = lines.get(change.getLineEnd());
+                String newStartLineText = startLine.getRawText().substring(0, change.getRangeStart()) +
+                        endLine.getRawText().substring(change.getRangeEnd());
+                startLine.setRawText(newStartLineText);
+                lineText = newStartLineText;
+                // Need to delete the specified lines
+                for (int i = change.getLineEnd(); i > change.getLineStart(); i--) {
+                    lines.remove(i);
+                }
+            }
             String textBefore = lineText.substring(0, lineCaretPos);
             String textAfter = lineText.substring(lineCaretPos);
             String newLineText = textBefore + change.getText() + textAfter;
