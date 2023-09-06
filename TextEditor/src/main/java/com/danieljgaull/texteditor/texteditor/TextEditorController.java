@@ -60,10 +60,25 @@ public class TextEditorController {
         }
     }
 
-    public TextChange handleTextChange(TextChange inChange, int caretPos, int linePos) {
+    public void handleTextChange(TextChange inChange, int lineCaretPos, int linePos) {
         makeDirty(); // TODO: Only make dirty if needed
 
-        return null;
+        if (inChange.isNewLine()) {
+            // Just need to add a new line
+            TextLine line = lines.get(linePos);
+            String currentLineText = line.getRawText().substring(0, lineCaretPos);
+            String newLineText = line.getRawText().substring(lineCaretPos);
+            lines.add(linePos, new TextLine(line.getLineMode(), newLineText, line.copyLineData()));
+            line.setRawText(currentLineText);
+        }
+    }
+
+    public String buildText() {
+        StringBuilder builder = new StringBuilder();
+        for (TextLine line : lines) {
+            builder.append(line.getRawText()).append('\n');
+        }
+        return builder.toString();
     }
 
     public void save(String text) {

@@ -41,4 +41,8 @@ public class DataValue {
     public boolean isBooleanValue() {
         return booleanValue;
     }
+
+    public DataValue clone() {
+        return new DataValue(type, stringValue, numberValue, booleanValue);
+    }
 }

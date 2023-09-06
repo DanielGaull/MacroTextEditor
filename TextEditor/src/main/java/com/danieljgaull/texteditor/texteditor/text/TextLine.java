@@ -14,4 +14,18 @@ public class TextLine {
         this.lineData = lineData;
     }
 
+    public String getRawText() {
+        return rawText;
+    }
+    public Mode getLineMode() {
+        return lineMode;
+    }
+    public LineData copyLineData() {
+        return lineData;
+    }
+
+    public void setRawText(String rawText) {
+        this.rawText = rawText;
+    }
+
 }

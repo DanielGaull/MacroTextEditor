@@ -44,19 +44,23 @@ public class MainUiController implements PrimaryStageAware {
         );
 
         textArea.setTextFormatter(new TextFormatter<String>(change -> {
-            int linePosition = StringUtils.countChar(textArea.getText(), '\n');
+            int linePosition = StringUtils.countChar(textArea.getText(), change.getCaretPosition(), '\n');
+            // TODO: Remember to handle prefix/suffix text properly with this
+            int startOfLineIndex = StringUtils.lastIndexOfChar(textArea.getText(), change.getCaretPosition(), '\n');
             TextChange textChange = null;
+            System.out.println(change.getText().equals("\n"));
             if (change.getText().equals("\n")) {
                 textChange = TextChange.newLine();
             } else {
                 textChange = TextChange.typeText(change.getText());
             }
-            TextChange result = textEditorController.handleTextChange(textChange,
-                    change.getCaretPosition(), linePosition);
+            textEditorController.handleTextChange(textChange,
+                    change.getCaretPosition() - startOfLineIndex, linePosition);
+            String fullText = textEditorController.buildText();
 
             // Change the change to fit
 
-            return change;//onTextChange(change);
+            return change;
         }));
         textArea.setFont(Font.font("Consolas", FontWeight.NORMAL, 13));
 
