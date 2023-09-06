@@ -2,21 +2,32 @@ package com.danieljgaull.texteditor.texteditor.text;
 
 public class TextChange {
 
-    private final String text;
-    private final boolean isNewLine;
-    private final boolean isDelete;
+    private String text;
+    private boolean isNewLine;
+    private boolean isDelete;
+    private int rangeStart;
+    private int rangeEnd;
 
-    private TextChange(String text, boolean isNewLine, boolean isDelete) {
+    public TextChange() {
+        text = "";
+        isNewLine = false;
+        isDelete = false;
+        rangeStart = rangeEnd = 0;
+    }
+
+    public TextChange delete(int start, int end) {
+        rangeStart = start;
+        rangeEnd = end;
+        isDelete = true;
+        return this;
+    }
+    public TextChange type(String text) {
         this.text = text;
-        this.isNewLine = isNewLine;
-        this.isDelete = isDelete;
+        return this;
     }
-
-    public static TextChange newLine() {
-        return new TextChange(null, true, false);
-    }
-    public static TextChange typeText(String text) {
-        return new TextChange(text, false, false);
+    public TextChange newLine() {
+        isNewLine = true;
+        return this;
     }
 
     public String getText() {
@@ -29,5 +40,12 @@ public class TextChange {
 
     public boolean isDelete() {
         return isDelete;
+    }
+
+    public int getRangeStart() {
+        return rangeStart;
+    }
+    public int getRangeEnd() {
+        return rangeEnd;
     }
 }

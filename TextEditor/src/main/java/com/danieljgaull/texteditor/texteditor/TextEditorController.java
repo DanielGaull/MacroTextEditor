@@ -64,11 +64,11 @@ public class TextEditorController {
         }
     }
 
-    public void handleTextChange(TextChange inChange, int lineCaretPos, int linePos) {
+    public void handleTextChange(TextChange change, int lineCaretPos, int linePos) {
         makeDirty(); // TODO: Only make dirty if needed
         // TODO: make sure we take off the prefix/suffix text in calculating lineCaretPos
 
-        if (inChange.isNewLine()) {
+        if (change.isNewLine()) {
             // Just need to add a new line
             TextLine line = lines.get(linePos);
             String currentLineText = line.getRawText().substring(0, lineCaretPos);
@@ -80,9 +80,13 @@ public class TextEditorController {
             // TODO: this is where we'll detect macros (if the new text is only a backslash)
             TextLine line = lines.get(linePos);
             String lineText = line.getRawText();
+            if (change.isDelete()) {
+                // First, remove the deleted range. Then we can add the new text
+                lineText = lineText.substring(0, change.getRangeStart()) + lineText.substring(change.getRangeEnd());
+            }
             String textBefore = lineText.substring(0, lineCaretPos);
             String textAfter = lineText.substring(lineCaretPos);
-            String newLineText = textBefore + inChange.getText() + textAfter;
+            String newLineText = textBefore + change.getText() + textAfter;
             line.setRawText(newLineText);
         }
     }

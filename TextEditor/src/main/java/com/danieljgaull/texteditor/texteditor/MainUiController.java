@@ -58,14 +58,18 @@ public class MainUiController implements PrimaryStageAware {
             int linePosition = StringUtils.countChar(textArea.getText(),
                     change.getCaretPosition() - change.getText().length(), '\n');
             // TODO: Remember to handle prefix/suffix text properly with this
-            // TODO: Handle text deletion
             int startOfLineIndex = StringUtils.lastIndexOfChar(textArea.getText(),
                     change.getCaretPosition() - change.getText().length(), '\n') + 1;
             TextChange textChange = null;
             if (change.getText().equals("\n")) {
-                textChange = TextChange.newLine();
+                textChange = new TextChange().newLine();
             } else {
-                textChange = TextChange.typeText(change.getText());
+                textChange = new TextChange().type(change.getText());
+                if (change.isDeleted()) {
+                    // TODO: Handle deleting lines. Must look at the start and end to determine which lines to remove
+                    textChange.delete(change.getRangeStart() - startOfLineIndex,
+                            change.getRangeEnd() - startOfLineIndex);
+                }
             }
             int lineCaretPos = change.getCaretPosition() - startOfLineIndex - change.getText().length();
             textEditorController.handleTextChange(textChange, lineCaretPos, linePosition);
