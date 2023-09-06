@@ -72,8 +72,10 @@ public class MainUiController implements PrimaryStageAware {
             muteTextFormatter = false;
 
             // Change the change to fit
+            // TODO: Use a constructor to build the change we want to see
+            // TODO: Don't call text editor controller if not adding/deleting/replacing
             change.setText("");
-            change.setAnchor(change.getCaretPosition());
+            change.setRange(change.getCaretPosition(), change.getCaretPosition());
             return change;
         }));
         textArea.setFont(Font.font("Consolas", FontWeight.NORMAL, 13));
