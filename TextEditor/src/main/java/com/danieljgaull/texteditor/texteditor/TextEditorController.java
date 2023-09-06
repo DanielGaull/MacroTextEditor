@@ -85,13 +85,15 @@ public class TextEditorController {
             String newLineText = textBefore + inChange.getText() + textAfter;
             line.setRawText(newLineText);
         }
-        // TODO: Modify the edited line accordingly, following the lineCaretPos
     }
 
     public String buildText() {
         StringBuilder builder = new StringBuilder();
-        for (TextLine line : lines) {
-            builder.append(line.getRawText()).append('\n');
+        for (int i = 0; i < lines.size(); i++) {
+            builder.append(lines.get(i).getRawText());
+            if (i + 1 < lines.size()) {
+                builder.append('\n');
+            }
         }
         return builder.toString();
     }

@@ -49,23 +49,26 @@ public class MainUiController implements PrimaryStageAware {
             if (muteTextFormatter) {
                 return change;
             }
+            if (!change.isContentChange()) {
+                // We don't need to handle it here
+                // Let the change pass through unhindered
+                return change;
+            }
 
             int linePosition = StringUtils.countChar(textArea.getText(),
                     change.getCaretPosition() - change.getText().length(), '\n');
             // TODO: Remember to handle prefix/suffix text properly with this
             // TODO: Handle text deletion
             int startOfLineIndex = StringUtils.lastIndexOfChar(textArea.getText(),
-                    change.getCaretPosition() - change.getText().length(), '\n');
-            if (startOfLineIndex < 0) startOfLineIndex = 0;
+                    change.getCaretPosition() - change.getText().length(), '\n') + 1;
             TextChange textChange = null;
             if (change.getText().equals("\n")) {
                 textChange = TextChange.newLine();
             } else {
                 textChange = TextChange.typeText(change.getText());
             }
-            textEditorController.handleTextChange(textChange,
-                    change.getCaretPosition() - startOfLineIndex - change.getText().length(),
-                    linePosition);
+            int lineCaretPos = change.getCaretPosition() - startOfLineIndex - change.getText().length();
+            textEditorController.handleTextChange(textChange, lineCaretPos, linePosition);
             String fullText = textEditorController.buildText();
             muteTextFormatter = true; // Don't trigger ourselves again with this change
             textArea.setText(fullText);
@@ -73,7 +76,6 @@ public class MainUiController implements PrimaryStageAware {
 
             // Change the change to fit
             // TODO: Use a constructor to build the change we want to see
-            // TODO: Don't call text editor controller if not adding/deleting/replacing
             change.setText("");
             change.setRange(change.getCaretPosition(), change.getCaretPosition());
             return change;
