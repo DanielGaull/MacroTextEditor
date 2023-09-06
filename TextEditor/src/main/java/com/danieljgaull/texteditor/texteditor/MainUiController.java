@@ -1,6 +1,8 @@
 package com.danieljgaull.texteditor.texteditor;
 
+import com.danieljgaull.texteditor.texteditor.text.TextChange;
 import com.danieljgaull.texteditor.texteditor.util.PrimaryStageAware;
+import com.danieljgaull.texteditor.texteditor.util.StringUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -42,7 +44,14 @@ public class MainUiController implements PrimaryStageAware {
         );
 
         textArea.setTextFormatter(new TextFormatter<String>(change -> {
-            System.out.println(change.getText());
+            int linePosition = StringUtils.countChar(textArea.getText(), '\n');
+            TextChange textChange = null;
+            if (change.getText().equals("\n")) {
+                textChange = TextChange.newLine(linePosition);
+            } else {
+                textChange = TextChange.typeText(change.getText(), change.getCaretPosition(), linePosition);
+            }
+            TextChange result = onTextChange(textChange);
             return change;//onTextChange(change);
         }));
         textArea.setFont(Font.font("Consolas", FontWeight.NORMAL, 13));
@@ -71,10 +80,13 @@ public class MainUiController implements PrimaryStageAware {
         save();
     }
 
-    public void onTextChange(String oldText, String newText) {
+    public TextChange onTextChange(TextChange change) {
         textEditorController.makeDirty();
-        newText = textEditorController.handleTextChange(oldText, newText);
-        textArea.setText(newText);
+
+        // TODO: Have the TextEditorController handle the change, then come back to us
+        // NOTE: Text Editor Controller should determine if it should become dirty, because change may be ignored here
+
+        return null;
     }
 
     /*
