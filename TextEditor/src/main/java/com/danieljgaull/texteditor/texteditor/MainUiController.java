@@ -47,11 +47,15 @@ public class MainUiController implements PrimaryStageAware {
             int linePosition = StringUtils.countChar(textArea.getText(), '\n');
             TextChange textChange = null;
             if (change.getText().equals("\n")) {
-                textChange = TextChange.newLine(linePosition);
+                textChange = TextChange.newLine();
             } else {
-                textChange = TextChange.typeText(change.getText(), change.getCaretPosition(), linePosition);
+                textChange = TextChange.typeText(change.getText());
             }
-            TextChange result = onTextChange(textChange);
+            TextChange result = textEditorController.handleTextChange(textChange,
+                    change.getCaretPosition(), linePosition);
+
+            // Change the change to fit
+
             return change;//onTextChange(change);
         }));
         textArea.setFont(Font.font("Consolas", FontWeight.NORMAL, 13));
@@ -78,15 +82,6 @@ public class MainUiController implements PrimaryStageAware {
     }
     public void onSave(ActionEvent event) {
         save();
-    }
-
-    public TextChange onTextChange(TextChange change) {
-        textEditorController.makeDirty();
-
-        // TODO: Have the TextEditorController handle the change, then come back to us
-        // NOTE: Text Editor Controller should determine if it should become dirty, because change may be ignored here
-
-        return null;
     }
 
     /*

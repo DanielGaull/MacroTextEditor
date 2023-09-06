@@ -4,6 +4,7 @@ import com.danieljgaull.texteditor.texteditor.handlers.Action;
 import com.danieljgaull.texteditor.texteditor.handlers.FileContentsLoadedHandler;
 import com.danieljgaull.texteditor.texteditor.handlers.MessageHandler;
 import com.danieljgaull.texteditor.texteditor.modes.Modes;
+import com.danieljgaull.texteditor.texteditor.text.TextChange;
 import com.danieljgaull.texteditor.texteditor.text.TextLine;
 import javafx.beans.property.DoubleProperty;
 import javafx.concurrent.Task;
@@ -59,8 +60,10 @@ public class TextEditorController {
         }
     }
 
-    public String handleTextChange(String oldText, String newText) {
-        return newText;//.replaceAll("\\\\b", "...");
+    public TextChange handleTextChange(TextChange inChange, int caretPos, int linePos) {
+        makeDirty(); // TODO: Only make dirty if needed
+
+        return null;
     }
 
     public void save(String text) {
