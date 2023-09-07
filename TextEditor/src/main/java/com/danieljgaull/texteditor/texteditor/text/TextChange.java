@@ -1,5 +1,6 @@
 package com.danieljgaull.texteditor.texteditor.text;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TextChange {
@@ -12,12 +13,14 @@ public class TextChange {
     private int rangeEnd;
     private int lineStart;
     private int lineEnd;
+    private List<String> textLines;
 
     public TextChange() {
         text = "";
         isNewLine = false;
         isDelete = false;
         rangeStart = rangeEnd = 0;
+        textLines = new ArrayList<>();
     }
 
     public TextChange delete(int start, int end) {
@@ -36,6 +39,10 @@ public class TextChange {
     }
     public TextChange type(String text) {
         this.text = text;
+        return this;
+    }
+    public TextChange type(List<String> lines) {
+        this.textLines = lines;
         return this;
     }
     public TextChange newLine() {
@@ -62,7 +69,6 @@ public class TextChange {
         return rangeEnd;
     }
 
-
     public int getLineStart() {
         return lineStart;
     }
@@ -72,5 +78,9 @@ public class TextChange {
 
     public boolean isLineDelete() {
         return isLineDelete;
+    }
+
+    public List<String> getTextLines() {
+        return textLines;
     }
 }

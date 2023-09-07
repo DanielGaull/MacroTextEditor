@@ -98,8 +98,22 @@ public class TextEditorController {
             }
             String textBefore = lineText.substring(0, lineCaretPos);
             String textAfter = lineText.substring(lineCaretPos);
-            String newLineText = textBefore + change.getText() + textAfter;
-            line.setRawText(newLineText);
+            if (change.getTextLines().isEmpty()) {
+                String newLineText = textBefore + change.getText() + textAfter;
+                line.setRawText(newLineText);
+            } else {
+                // Add the first bit of text to our existing line
+                // Then, create lines for each of the other lines
+                // The last line will get the textAfter appended to it
+                line.setRawText(textBefore + change.getTextLines().get(0));
+                for (int i = 1; i < change.getTextLines().size(); i++) {
+                    String newLine = change.getTextLines().get(i);
+                    lines.add(linePos + 1, new TextLine(line.getLineMode(), newLine, line.copyLineData()));
+                    linePos++;
+                }
+                // Add textAfter to the last line
+                lines.get(linePos).setRawText(lines.get(linePos).getRawText() + textAfter);
+            }
         }
     }
 

@@ -14,6 +14,7 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MainUiController implements PrimaryStageAware {
@@ -66,7 +67,15 @@ public class MainUiController implements PrimaryStageAware {
             if (change.getText().equals("\n")) {
                 textChange = new TextChange().newLine();
             } else {
-                textChange = new TextChange().type(change.getText());
+                if (change.getText().contains("\n")) {
+                    // Split on the newline
+                    String[] typed = change.getText().split("\n");
+                    List<String> newLines = new ArrayList<>(Arrays.asList(typed));
+                    textChange = new TextChange().type(newLines);
+                } else {
+                    // Simple to make it just type some text
+                    textChange = new TextChange().type(change.getText());
+                }
                 if (change.isDeleted()) {
                     // If there are any \n in the deleted range, we need to do a delete lines
                     // Otherwise, we can just delete within a single line
