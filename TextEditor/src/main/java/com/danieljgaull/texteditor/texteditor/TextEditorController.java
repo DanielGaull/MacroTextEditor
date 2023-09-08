@@ -3,6 +3,12 @@ package com.danieljgaull.texteditor.texteditor;
 import com.danieljgaull.texteditor.texteditor.handlers.Action;
 import com.danieljgaull.texteditor.texteditor.handlers.FileContentsLoadedHandler;
 import com.danieljgaull.texteditor.texteditor.handlers.MessageHandler;
+import com.danieljgaull.texteditor.texteditor.instruction.Instruction;
+import com.danieljgaull.texteditor.texteditor.instruction.InstructionTypes;
+import com.danieljgaull.texteditor.texteditor.macro.Macro;
+import com.danieljgaull.texteditor.texteditor.macro.MacroCall;
+import com.danieljgaull.texteditor.texteditor.macro.MacroCallParser;
+import com.danieljgaull.texteditor.texteditor.macro.MacroParser;
 import com.danieljgaull.texteditor.texteditor.modes.Mode;
 import com.danieljgaull.texteditor.texteditor.modes.Modes;
 import com.danieljgaull.texteditor.texteditor.text.LineData;
@@ -33,6 +39,9 @@ public class TextEditorController {
     private int caret;
     private int anchor;
 
+    private List<Macro> macros;
+    private MacroCallParser macroCallParser;
+
     public TextEditorController(MessageHandler statusMessageHandler, MessageHandler titleChangeHandler,
                                 MessageHandler modeChangeHandler) {
         this.statusMessageHandler = statusMessageHandler;
@@ -48,6 +57,15 @@ public class TextEditorController {
         lines = new ArrayList<>();
         // Add our first, empty line
         lines.add(new TextLine(modes.getMode("Default"), "", new LineData()));
+
+        macros = new ArrayList<>();
+        // TODO: Remove this test
+        String macroString = """
+                macro bullet()
+                insert •
+                endmacro""";
+        macros.add(new MacroParser().parse(macroString));
+        macroCallParser = new MacroCallParser(macros);
     }
 
     public void makeDirty() {
@@ -146,7 +164,8 @@ public class TextEditorController {
     }
 
     public void runMacro(String text) {
-
+        MacroCall call = macroCallParser.parse(text);
+        System.out.println();
     }
 
     public void save(String text) {

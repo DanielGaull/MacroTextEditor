@@ -23,12 +23,24 @@ public class MacroCallParser {
     }
 
     public MacroCall parse(String input) {
+        String name;
+        String[] args;
         // Need to get the name, and get the arguments
         int firstParenIndex = input.indexOf(ARG_WRAPPER_START);
         int lastParenIndex = input.lastIndexOf(ARG_WRAPPER_END);
-        String name = input.substring(0, firstParenIndex);
-        String[] args = input.substring(firstParenIndex, lastParenIndex)
-                .split(Character.toString(ARG_SEPARATOR));
+        // If no parens provided, then we have an empty arg list
+        if (firstParenIndex < 0 || lastParenIndex < 0) {
+            name = input;
+            args = new String[0];
+        } else {
+            name = input.substring(0, firstParenIndex);
+            String argString = input.substring(firstParenIndex + 1, lastParenIndex);
+            if (argString.length() > 0) {
+                args = argString.split(Character.toString(ARG_SEPARATOR));
+            } else {
+                args = new String[0];
+            }
+        }
 
         // Find the macro with this name
         Macro calledMacro = null;

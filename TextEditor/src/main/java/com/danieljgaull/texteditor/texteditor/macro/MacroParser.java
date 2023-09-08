@@ -22,7 +22,7 @@ public class MacroParser {
         int headerOpenParenPos = header.indexOf(OPEN_PAREN);
         int headerCloseParenPos = header.indexOf(CLOSE_PAREN);
         String name = header.substring(header.indexOf(' ') + 1, headerOpenParenPos).trim();
-        String paramString = header.substring(headerOpenParenPos + 1, headerCloseParenPos - 1).trim();
+        String paramString = header.substring(headerOpenParenPos + 1, headerCloseParenPos).trim();
         List<MacroParameter> parameters = parseParameters(paramString);
 
         List<Instruction> instructions = new ArrayList<>();
@@ -36,6 +36,9 @@ public class MacroParser {
     }
 
     private List<MacroParameter> parseParameters(String paramString) {
+        if (paramString.length() == 0) {
+            return new ArrayList<>();
+        }
         String[] paramEntries = paramString.split("" + PARAMS_DELIMITER);
         List<MacroParameter> params = new ArrayList<>();
         for (int i = 0; i < paramEntries.length; i++) {
