@@ -145,6 +145,10 @@ public class TextEditorController {
         return anchor;
     }
 
+    public void runMacro(String text) {
+
+    }
+
     public void save(String text) {
         try {
             if (currentLoadedFile == null) {

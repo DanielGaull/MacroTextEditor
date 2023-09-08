@@ -91,6 +91,14 @@ public class MainUiController implements PrimaryStageAware {
     }
 
     private void runMacro(String text) {
+        textEditorController.runMacro(text);
+
+        // Make sure we've properly set the text in here
+        String fullText = textEditorController.buildText();
+        muteTextFormatter = true; // Don't trigger ourselves again with this change
+        textArea.setText(fullText);
+        muteTextFormatter = false;
+
         // TODO: make sure we have these set properly
         textArea.selectRange(textEditorController.getCaret(), textEditorController.getAnchor());
 
