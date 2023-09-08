@@ -6,10 +6,13 @@ import com.danieljgaull.texteditor.texteditor.util.PrimaryStageAware;
 import com.danieljgaull.texteditor.texteditor.util.StringUtils;
 import com.danieljgaull.texteditor.texteditor.util.Tuple;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -56,6 +59,15 @@ public class MainUiController implements PrimaryStageAware {
         textArea.setTextFormatter(new TextFormatter<String>(this::handleTextChange));
         textArea.setFont(Font.font("Consolas", FontWeight.NORMAL, 13));
 
+        macroField.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent keyEvent) {
+                if (keyEvent.getCode() == KeyCode.ENTER) {
+                    runMacro(macroField.getText());
+                }
+            }
+        });
+
         KeyCodeInitializer keyCodeInitializer = new KeyCodeInitializer();
 
         textArea.sceneProperty().addListener((observable, oldScene, newScene) -> {
@@ -75,7 +87,17 @@ public class MainUiController implements PrimaryStageAware {
 //        macroField.setLayoutX(caretPos.x);
 //        macroField.setLayoutY(caretPos.y);
 //        macroField.setVisible(true);
+        macroField.setText("");
         macroField.requestFocus();
+    }
+
+    private void runMacro(String text) {
+        // TODO: make sure we have these set properly
+        textArea.positionCaret(returnCaretPos);
+        textArea.selectPositionCaret(returnCaretPos);
+
+        textArea.requestFocus();
+        macroField.setText("");
     }
 
     private Point calculateCaretPosition() {
@@ -155,6 +177,8 @@ public class MainUiController implements PrimaryStageAware {
         if (change.getText().equals("\n")) {
             textChange = new TextChange().newLine();
         } else if (change.getText().equals("\\")) {
+            // TODO: Make it so pasting in \ works
+            // Make sure this change isn't registered
             textChange = new TextChange();
             returnCaretPos = caret;
             startMacro();
