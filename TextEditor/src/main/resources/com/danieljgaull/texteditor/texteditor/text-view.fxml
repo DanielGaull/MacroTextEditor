@@ -13,6 +13,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.control.TextField?>
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.danieljgaull.texteditor.texteditor.MainUiController">
 
@@ -43,8 +44,19 @@
                       AnchorPane.rightAnchor="0.0"
                       AnchorPane.topAnchor="0.0"
             />
+
         </AnchorPane>
     </center>
+
+
+    <AnchorPane>
+        <TextField fx:id="macroField"/>
+        <!--
+                   visible="false"
+                   managed="false"
+                   pickOnBounds="false"
+        -->
+    </AnchorPane>
 
     <bottom>
         <HBox>

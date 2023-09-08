@@ -1,16 +1,19 @@
 package com.danieljgaull.texteditor.texteditor;
 
 import com.danieljgaull.texteditor.texteditor.text.TextChange;
+import com.danieljgaull.texteditor.texteditor.util.Point;
 import com.danieljgaull.texteditor.texteditor.util.PrimaryStageAware;
 import com.danieljgaull.texteditor.texteditor.util.StringUtils;
+import com.danieljgaull.texteditor.texteditor.util.Tuple;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextFormatter;
+import javafx.geometry.Pos;
+import javafx.geometry.VPos;
+import javafx.scene.control.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextBoundsType;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
@@ -20,6 +23,8 @@ import java.util.List;
 public class MainUiController implements PrimaryStageAware {
     @FXML
     private TextArea textArea;
+    @FXML
+    private TextField macroField;
     @FXML
     private ProgressBar progressBar;
     @FXML
@@ -62,7 +67,6 @@ public class MainUiController implements PrimaryStageAware {
             int linePosition = getLineForPosition(currentText, caretMinusText);
             // TODO: Remember to handle prefix/suffix text properly with this
             int startOfLineIndex = StringUtils.lastIndexOfChar(currentText, caretMinusText, '\n') + 1;
-            List<Integer> deletedLines = new ArrayList<>();
             TextChange textChange = null;
             if (change.getText().equals("\n")) {
                 textChange = new TextChange().newLine();
@@ -127,6 +131,34 @@ public class MainUiController implements PrimaryStageAware {
 
     private static int getLineForPosition(String text, int position) {
         return StringUtils.countChar(text, position, '\n');
+    }
+
+    private void startMacro() {
+//        Point caretPos = calculateCaretPosition();
+//        macroField.setLayoutX(caretPos.x);
+//        macroField.setLayoutY(caretPos.y);
+//        macroField.setVisible(true);
+        macroField.requestFocus();
+    }
+
+    private Point calculateCaretPosition() {
+        String text = textArea.getText();
+        int caretPosition = text.length();//textArea.getCaretPosition();
+        int startOfLineIndex = StringUtils.lastIndexOfChar(text, caretPosition, '\n') + 1;
+
+        Font font = textArea.getFont();
+
+        // Create a temp Text node to calculate the positioning
+        Text tempForX = new Text(text.substring(startOfLineIndex, caretPosition));
+        Text tempForY = new Text(text.substring(0, startOfLineIndex));
+        tempForX.setFont(font);
+        tempForY.setFont(font);
+        tempForX.setBoundsType(TextBoundsType.VISUAL);
+        tempForY.setBoundsType(TextBoundsType.VISUAL);
+        double x = tempForX.getLayoutBounds().getWidth();
+        double y = tempForY.getLayoutBounds().getHeight();
+
+        return new Point(x, y);
     }
 
     /*
