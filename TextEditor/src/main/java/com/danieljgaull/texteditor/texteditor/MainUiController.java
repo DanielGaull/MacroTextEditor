@@ -39,7 +39,6 @@ public class MainUiController implements PrimaryStageAware {
 
     private boolean muteTextFormatter = false;
 
-    private int returnCaretPos;
     private TextEditorController textEditorController;
 
     public void initialize() {
@@ -93,8 +92,7 @@ public class MainUiController implements PrimaryStageAware {
 
     private void runMacro(String text) {
         // TODO: make sure we have these set properly
-        textArea.positionCaret(returnCaretPos);
-        textArea.selectPositionCaret(returnCaretPos);
+        textArea.selectRange(textEditorController.getCaret(), textEditorController.getAnchor());
 
         textArea.requestFocus();
         macroField.setText("");
@@ -169,6 +167,7 @@ public class MainUiController implements PrimaryStageAware {
 
         String currentText = textArea.getText();
         int caret = change.getCaretPosition();
+        int anchor = change.getAnchor();
         int caretMinusText = caret - change.getText().length();
         int linePosition = getLineForPosition(currentText, caretMinusText);
         // TODO: Remember to handle prefix/suffix text properly with this
@@ -180,7 +179,9 @@ public class MainUiController implements PrimaryStageAware {
             // TODO: Make it so pasting in \ works
             // Make sure this change isn't registered
             textChange = new TextChange();
-            returnCaretPos = caret;
+            // Make sure that we subtract one to account for the \ that it believes was typed
+            caret--;
+            anchor--;
             startMacro();
         } else {
             if (change.getText().contains("\n")) {
@@ -219,7 +220,7 @@ public class MainUiController implements PrimaryStageAware {
         int lineCaretPos = caret - startOfLineIndex - change.getText().length();
         textEditorController.handleTextChange(textChange, lineCaretPos, linePosition);
         String fullText = textEditorController.buildText();
-        textEditorController.setCaretAndAnchor(change.getCaretPosition(), change.getAnchor());
+        textEditorController.setCaretAndAnchor(caret, anchor);
         muteTextFormatter = true; // Don't trigger ourselves again with this change
         textArea.setText(fullText);
         muteTextFormatter = false;

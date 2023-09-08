@@ -83,4 +83,8 @@ public class TextChange {
     public List<String> getTextLines() {
         return textLines;
     }
+
+    public boolean isAnythingChanged() {
+        return text.length() > 0 || textLines.size() > 0 || isNewLine || isDelete || isLineDelete;
+    }
 }

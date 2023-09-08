@@ -67,7 +67,11 @@ public class TextEditorController {
     }
 
     public void handleTextChange(TextChange change, int lineCaretPos, int linePos) {
-        makeDirty(); // TODO: Only make dirty if needed
+        if (!change.isAnythingChanged()) {
+            // Nothing was changed, so we should just return immediately
+            return;
+        }
+        makeDirty();
         // TODO: make sure we take off the prefix/suffix text in calculating lineCaretPos
 
         if (change.isNewLine()) {
@@ -79,7 +83,6 @@ public class TextEditorController {
             line.setRawText(currentLineText);
         } else {
             // Insert the newly-typed text at this location
-            // TODO: this is where we'll detect macros (if the new text is only a backslash)
             TextLine line = lines.get(linePos);
             String lineText = line.getRawText();
             if (change.isDelete()) {
