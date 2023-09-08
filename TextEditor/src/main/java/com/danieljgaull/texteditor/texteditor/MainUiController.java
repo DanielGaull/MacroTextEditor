@@ -36,6 +36,7 @@ public class MainUiController implements PrimaryStageAware {
 
     private boolean muteTextFormatter = false;
 
+    private int returnCaretPos;
     private TextEditorController textEditorController;
 
     public void initialize() {
@@ -52,71 +53,7 @@ public class MainUiController implements PrimaryStageAware {
                 str -> modeText.setText("Mode: " + str)
         );
 
-        textArea.setTextFormatter(new TextFormatter<String>(change -> {
-            if (muteTextFormatter) {
-                return change;
-            }
-            if (!change.isContentChange()) {
-                // We don't need to handle it here
-                // Let the change pass through unhindered
-                return change;
-            }
-
-            String currentText = textArea.getText();
-            int caretMinusText = change.getCaretPosition() - change.getText().length();
-            int linePosition = getLineForPosition(currentText, caretMinusText);
-            // TODO: Remember to handle prefix/suffix text properly with this
-            int startOfLineIndex = StringUtils.lastIndexOfChar(currentText, caretMinusText, '\n') + 1;
-            TextChange textChange = null;
-            if (change.getText().equals("\n")) {
-                textChange = new TextChange().newLine();
-            } else {
-                if (change.getText().contains("\n")) {
-                    // Split on the newline
-                    String[] typed = change.getText().split("\n");
-                    List<String> newLines = new ArrayList<>(Arrays.asList(typed));
-                    textChange = new TextChange().type(newLines);
-                } else {
-                    // Simple to make it just type some text
-                    textChange = new TextChange().type(change.getText());
-                }
-                if (change.isDeleted()) {
-                    // If there are any \n in the deleted range, we need to do a delete lines
-                    // Otherwise, we can just delete within a single line
-                    if (currentText.substring(change.getRangeStart(), change.getRangeEnd()).contains("\n")) {
-                        // Doing a 'delete lines'
-                        // Determine which lines to delete
-                        // Get the line position for the start and end, and delete every line that is between those
-                        int startLine = getLineForPosition(currentText, change.getRangeStart());
-                        int endLine = getLineForPosition(currentText, change.getRangeEnd());
-                        // Now, we need to determine the range start/end. i.e. the caret/anchor
-                        // on the 2 lines that we end up keeping.
-                        int indexOfStartOfFirst = StringUtils.lastIndexOfChar(currentText, change.getRangeStart(), '\n') + 1;
-                        int indexOfStartOfLast = StringUtils.lastIndexOfChar(currentText, change.getRangeEnd(), '\n') + 1;
-                        int start = change.getRangeStart() - indexOfStartOfFirst;
-                        int end = change.getRangeEnd() - indexOfStartOfLast;
-                        textChange.deleteLines(startLine, endLine, start, end);
-                    } else {
-                        // Deleting within a line
-                        int start = change.getRangeStart() - startOfLineIndex;
-                        int end = change.getRangeEnd() - startOfLineIndex;
-                        textChange.delete(start, end);
-                    }
-                }
-            }
-            int lineCaretPos = change.getCaretPosition() - startOfLineIndex - change.getText().length();
-            textEditorController.handleTextChange(textChange, lineCaretPos, linePosition);
-            String fullText = textEditorController.buildText();
-            muteTextFormatter = true; // Don't trigger ourselves again with this change
-            textArea.setText(fullText);
-            muteTextFormatter = false;
-
-            // Change the change to fit
-            // TODO: Use a constructor to build the change we want to see
-            change.setText("");
-            change.setRange(change.getCaretPosition(), change.getCaretPosition());
-            return change;
-        }));
+        textArea.setTextFormatter(new TextFormatter<String>(this::handleTextChange));
         textArea.setFont(Font.font("Consolas", FontWeight.NORMAL, 13));
 
         KeyCodeInitializer keyCodeInitializer = new KeyCodeInitializer();
@@ -196,5 +133,76 @@ public class MainUiController implements PrimaryStageAware {
     @Override
     public void setPrimaryStage(Stage stage) {
         this.stage = stage;
+    }
+
+    private TextFormatter.Change handleTextChange(TextFormatter.Change change) {
+        if (muteTextFormatter) {
+            return change;
+        }
+        if (!change.isContentChange()) {
+            // We don't need to handle it here
+            // Let the change pass through unhindered
+            return change;
+        }
+
+        String currentText = textArea.getText();
+        int caret = change.getCaretPosition();
+        int caretMinusText = caret - change.getText().length();
+        int linePosition = getLineForPosition(currentText, caretMinusText);
+        // TODO: Remember to handle prefix/suffix text properly with this
+        int startOfLineIndex = StringUtils.lastIndexOfChar(currentText, caretMinusText, '\n') + 1;
+        TextChange textChange = null;
+        if (change.getText().equals("\n")) {
+            textChange = new TextChange().newLine();
+        } else if (change.getText().equals("\\")) {
+            textChange = new TextChange();
+            returnCaretPos = caret;
+            startMacro();
+        } else {
+            if (change.getText().contains("\n")) {
+                // Split on the newline
+                String[] typed = change.getText().split("\n");
+                List<String> newLines = new ArrayList<>(Arrays.asList(typed));
+                textChange = new TextChange().type(newLines);
+            } else {
+                // Simple to make it just type some text
+                textChange = new TextChange().type(change.getText());
+            }
+            if (change.isDeleted()) {
+                // If there are any \n in the deleted range, we need to do a delete lines
+                // Otherwise, we can just delete within a single line
+                if (currentText.substring(change.getRangeStart(), change.getRangeEnd()).contains("\n")) {
+                    // Doing a 'delete lines'
+                    // Determine which lines to delete
+                    // Get the line position for the start and end, and delete every line that is between those
+                    int startLine = getLineForPosition(currentText, change.getRangeStart());
+                    int endLine = getLineForPosition(currentText, change.getRangeEnd());
+                    // Now, we need to determine the range start/end. i.e. the caret/anchor
+                    // on the 2 lines that we end up keeping.
+                    int indexOfStartOfFirst = StringUtils.lastIndexOfChar(currentText, change.getRangeStart(), '\n') + 1;
+                    int indexOfStartOfLast = StringUtils.lastIndexOfChar(currentText, change.getRangeEnd(), '\n') + 1;
+                    int start = change.getRangeStart() - indexOfStartOfFirst;
+                    int end = change.getRangeEnd() - indexOfStartOfLast;
+                    textChange.deleteLines(startLine, endLine, start, end);
+                } else {
+                    // Deleting within a line
+                    int start = change.getRangeStart() - startOfLineIndex;
+                    int end = change.getRangeEnd() - startOfLineIndex;
+                    textChange.delete(start, end);
+                }
+            }
+        }
+        int lineCaretPos = caret - startOfLineIndex - change.getText().length();
+        textEditorController.handleTextChange(textChange, lineCaretPos, linePosition);
+        String fullText = textEditorController.buildText();
+        muteTextFormatter = true; // Don't trigger ourselves again with this change
+        textArea.setText(fullText);
+        muteTextFormatter = false;
+
+        // Change the change to fit
+        // TODO: Use a constructor to build the change we want to see
+        change.setText("");
+        change.setRange(0, 0);
+        return change;
     }
 }
