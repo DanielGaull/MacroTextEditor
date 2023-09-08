@@ -163,9 +163,32 @@ public class TextEditorController {
         return anchor;
     }
 
-    public void runMacro(String text) {
+    public void runMacro(String text, int line, int lineCaret) {
         MacroCall call = macroCallParser.parse(text);
-        System.out.println();
+        for (int i = 0; i < call.macro().getInstructions().size(); i++) {
+            Instruction inst = call.macro().getInstructions().get(i);
+            runInstruction(inst, line, lineCaret);
+        }
+    }
+    private void runInstruction(Instruction instruction, int line, int lineCaret) {
+        // TODO: Receive arguments so we can use them as variables in here
+        if (instruction.getType() == InstructionTypes.InsertText) {
+            // Get the two args
+            String preText = instruction.getArgs().get(0);
+            String postText = "";
+            if (instruction.getArgs().size() > 1) {
+                postText = instruction.getArgs().get(1);
+            }
+            // Now add the text
+            String raw = lines.get(line).getRawText();
+            String textBefore = raw.substring(0, lineCaret);
+            String textAfter = raw.substring(lineCaret);
+            raw = textBefore + preText + postText + textAfter;
+            lines.get(line).setRawText(raw);
+            caret += preText.length();
+            anchor += preText.length();
+        }
+
     }
 
     public void save(String text) {

@@ -91,7 +91,13 @@ public class MainUiController implements PrimaryStageAware {
     }
 
     private void runMacro(String text) {
-        textEditorController.runMacro(text);
+        int caret = textArea.getCaretPosition();
+        String currentText = textArea.getText();
+        int linePosition = getLineForPosition(currentText, caret);
+        int startOfLineIndex = StringUtils.lastIndexOfChar(currentText, caret, '\n') + 1;
+        int lineCaretPos = caret - startOfLineIndex - 1;
+
+        textEditorController.runMacro(text, linePosition, lineCaretPos);
 
         // Make sure we've properly set the text in here
         String fullText = textEditorController.buildText();
