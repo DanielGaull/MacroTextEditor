@@ -14,6 +14,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.VBox?>
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.danieljgaull.texteditor.texteditor.MainUiController">
 
@@ -50,22 +51,25 @@
 
 
     <AnchorPane>
-        <TextField fx:id="macroField"/>
-        <!--
-                   visible="false"
-                   managed="false"
-                   pickOnBounds="false"
-        -->
+
     </AnchorPane>
 
     <bottom>
-        <HBox>
-            <Label fx:id="statusText" prefWidth="150.0"/>
-            <ProgressBar fx:id="progressBar"
-                         progress="0.0"
-            />
-            <Pane HBox.hgrow="ALWAYS" />
-            <Label fx:id="modeText" style="-fx-padding: 0 5px 0 0"/>
-        </HBox>
+        <VBox>
+            <TextField fx:id="macroField"/>
+            <!--
+                       visible="false"
+                       managed="false"
+                       pickOnBounds="false"
+            -->
+            <HBox>
+                <Label fx:id="statusText" prefWidth="150.0"/>
+                <ProgressBar fx:id="progressBar"
+                             progress="0.0"
+                />
+                <Pane HBox.hgrow="ALWAYS" />
+                <Label fx:id="modeText" style="-fx-padding: 0 5px 0 0"/>
+            </HBox>
+        </VBox>
     </bottom>
 </BorderPane>
