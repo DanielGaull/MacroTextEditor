@@ -30,6 +30,8 @@ public class TextEditorController {
     private Modes modes;
 
     private List<TextLine> lines;
+    private int caret;
+    private int anchor;
 
     public TextEditorController(MessageHandler statusMessageHandler, MessageHandler titleChangeHandler,
                                 MessageHandler modeChangeHandler) {
@@ -126,6 +128,18 @@ public class TextEditorController {
             }
         }
         return builder.toString();
+    }
+
+    public void setCaretAndAnchor(int caret, int anchor) {
+        this.caret = caret;
+        this.anchor = anchor;
+    }
+
+    public int getCaret() {
+        return caret;
+    }
+    public int getAnchor() {
+        return anchor;
     }
 
     public void save(String text) {

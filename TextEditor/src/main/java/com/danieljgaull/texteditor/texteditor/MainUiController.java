@@ -219,6 +219,7 @@ public class MainUiController implements PrimaryStageAware {
         int lineCaretPos = caret - startOfLineIndex - change.getText().length();
         textEditorController.handleTextChange(textChange, lineCaretPos, linePosition);
         String fullText = textEditorController.buildText();
+        textEditorController.setCaretAndAnchor(change.getCaretPosition(), change.getAnchor());
         muteTextFormatter = true; // Don't trigger ourselves again with this change
         textArea.setText(fullText);
         muteTextFormatter = false;
