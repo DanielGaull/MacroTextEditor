@@ -72,6 +72,12 @@ public class TextEditorController {
                 insert (true ? "•"*5 : false)
                 endmacro""";
         macros.add(new MacroParser().parse(macroString));
+        macroString = """
+                macro header(length:number)
+                insert (("="*length) + " ") (" " + ("="*length))
+                endmacro
+                """;
+        macros.add(new MacroParser().parse(macroString));
         macroCallParser = new MacroCallParser(macros);
 
         exprParser = new ExpressionParser();
@@ -175,15 +181,19 @@ public class TextEditorController {
 
     public void runMacro(String text, int line, int lineCaret) {
         MacroCall call = macroCallParser.parse(text);
+        VariableData args = new VariableData();
+        for (int i = 0; i < call.args().size(); i++) {
+            args.setValue(call.macro().getParameters().get(i).name, call.args().get(i));
+        }
         for (int i = 0; i < call.macro().getInstructions().size(); i++) {
             Instruction inst = call.macro().getInstructions().get(i);
-            runInstruction(inst, line, lineCaret);
+            runInstruction(inst, line, lineCaret, args);
         }
     }
-    private void runInstruction(Instruction instruction, int line, int lineCaret) {
+    private void runInstruction(Instruction instruction, int line, int lineCaret, VariableData args) {
         // TODO: Add variable data (concat the macro args w/ line data
         VariableData vars = new VariableData();
-        // TODO: Receive arguments so we can use them as variables in here
+        vars.concat(args);
         if (instruction.getType() == InstructionTypes.InsertText) {
             // Get the two args
             String preTextRaw = instruction.getArgs().get(0);
