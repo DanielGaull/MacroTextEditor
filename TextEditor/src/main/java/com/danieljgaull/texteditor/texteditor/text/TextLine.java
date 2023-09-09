@@ -6,9 +6,9 @@ public class TextLine {
 
     private Mode lineMode;
     private String rawText;
-    private LineData lineData;
+    private VariableData lineData;
 
-    public TextLine(Mode mode, String rawText, LineData lineData) {
+    public TextLine(Mode mode, String rawText, VariableData lineData) {
         this.lineMode = mode;
         this.rawText = rawText;
         this.lineData = lineData;
@@ -20,7 +20,7 @@ public class TextLine {
     public Mode getLineMode() {
         return lineMode;
     }
-    public LineData copyLineData() {
+    public VariableData copyLineData() {
         return lineData;
     }
 

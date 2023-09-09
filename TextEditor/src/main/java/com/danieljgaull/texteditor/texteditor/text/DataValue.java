@@ -38,11 +38,71 @@ public class DataValue {
         return numberValue;
     }
 
-    public boolean isBooleanValue() {
+    public boolean getBooleanValue() {
         return booleanValue;
     }
 
     public DataValue clone() {
         return new DataValue(type, stringValue, numberValue, booleanValue);
+    }
+
+    public boolean isEqual(DataValue other) {
+        if (other.getType() != type) {
+            return false;
+        }
+        switch (type) {
+            case String:
+                return other.stringValue.equals(stringValue);
+            case Number:
+                return other.numberValue == numberValue;
+            case Boolean:
+                return other.booleanValue == booleanValue;
+        }
+        return false;
+    }
+
+    // Numbers - numerical order; strings - String.compare; booleans - true > false
+    public boolean isGreaterThan(DataValue other) {
+        if (other.getType() != type) {
+            return false;
+        }
+        switch (type) {
+            case String:
+                return stringValue.compareTo(other.stringValue) > 0;
+            case Number:
+                return numberValue > other.numberValue;
+            case Boolean:
+                // Only greater than if this == true and other == false
+                return booleanValue && !other.booleanValue;
+        }
+        return false;
+    }
+
+    public boolean isLessThan(DataValue other) {
+        if (other.getType() != type) {
+            return false;
+        }
+        switch (type) {
+            case String:
+                return stringValue.compareTo(other.stringValue) < 0;
+            case Number:
+                return numberValue < other.numberValue;
+            case Boolean:
+                // Only less than if this == false and other == true
+                return !booleanValue && other.booleanValue;
+        }
+        return false;
+    }
+
+    public String toString() {
+        switch (type) {
+            case String:
+                return stringValue;
+            case Number:
+                return Double.toString(numberValue);
+            case Boolean:
+                return Boolean.toString(booleanValue);
+        }
+        return "{UNK}";
     }
 }

@@ -3,15 +3,15 @@ package com.danieljgaull.texteditor.texteditor.text;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LineData {
+public class VariableData {
 
     private HashMap<String, DataValue> dataValues;
 
-    public LineData() {
+    public VariableData() {
         this(new HashMap<>());
     }
 
-    private LineData(HashMap<String, DataValue> dataValues) {
+    private VariableData(HashMap<String, DataValue> dataValues) {
         this.dataValues = dataValues;
     }
 
@@ -23,12 +23,12 @@ public class LineData {
         return dataValues.get(name);
     }
 
-    public LineData clone() {
+    public VariableData clone() {
         HashMap<String, DataValue> clonedMap = new HashMap<>();
         for (Map.Entry<String, DataValue> entry : dataValues.entrySet()) {
             clonedMap.put(entry.getKey(), entry.getValue().clone());
         }
-        return new LineData(clonedMap);
+        return new VariableData(clonedMap);
     }
 
     // TODO: Read in/convert to a file (probably just have raw number/string/boolean)

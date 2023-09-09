@@ -9,9 +9,8 @@ import com.danieljgaull.texteditor.texteditor.macro.Macro;
 import com.danieljgaull.texteditor.texteditor.macro.MacroCall;
 import com.danieljgaull.texteditor.texteditor.macro.MacroCallParser;
 import com.danieljgaull.texteditor.texteditor.macro.MacroParser;
-import com.danieljgaull.texteditor.texteditor.modes.Mode;
 import com.danieljgaull.texteditor.texteditor.modes.Modes;
-import com.danieljgaull.texteditor.texteditor.text.LineData;
+import com.danieljgaull.texteditor.texteditor.text.VariableData;
 import com.danieljgaull.texteditor.texteditor.text.TextChange;
 import com.danieljgaull.texteditor.texteditor.text.TextLine;
 import javafx.beans.property.DoubleProperty;
@@ -56,7 +55,7 @@ public class TextEditorController {
 
         lines = new ArrayList<>();
         // Add our first, empty line
-        lines.add(new TextLine(modes.getMode("Default"), "", new LineData()));
+        lines.add(new TextLine(modes.getMode("Default"), "", new VariableData()));
 
         macros = new ArrayList<>();
         // TODO: Remove this test
