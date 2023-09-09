@@ -96,6 +96,7 @@ public class MainUiController implements PrimaryStageAware {
         int linePosition = getLineForPosition(currentText, caret);
         int startOfLineIndex = StringUtils.lastIndexOfChar(currentText, caret, '\n') + 1;
         int lineCaretPos = caret - startOfLineIndex - 1;
+        if (lineCaretPos < 0) lineCaretPos = 0;
 
         textEditorController.runMacro(text, linePosition, lineCaretPos);
 
