@@ -20,8 +20,11 @@ public class TextLine {
     public Mode getLineMode() {
         return lineMode;
     }
-    public VariableData copyLineData() {
+    public VariableData getLineData() {
         return lineData;
+    }
+    public VariableData copyLineData() {
+        return lineData.clone();
     }
 
     public void setRawText(String rawText) {

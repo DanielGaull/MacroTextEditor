@@ -194,6 +194,8 @@ public class TextEditorController {
         // TODO: Add variable data (concat the macro args w/ line data
         VariableData vars = new VariableData();
         vars.concat(args);
+        VariableData lineData = lines.get(line).getLineData();
+        vars.concat(lineData);
         if (instruction.getType() == InstructionTypes.InsertText) {
             // Get the two args
             String preTextRaw = instruction.getArgs().get(0);
