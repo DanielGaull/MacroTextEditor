@@ -80,7 +80,7 @@ public class ExpressionParser {
 
         Matcher stringMatcher = STRING_REGEX.matcher(input);
         if (stringMatcher.find()) {
-            String value = stringMatcher.group();
+            String value = stringMatcher.group(1);
             return Ast.string(value.replace("\\\\", "\\"));
         }
 

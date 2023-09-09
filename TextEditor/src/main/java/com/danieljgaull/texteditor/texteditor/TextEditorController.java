@@ -1,5 +1,8 @@
 package com.danieljgaull.texteditor.texteditor;
 
+import com.danieljgaull.texteditor.texteditor.expressions.Ast;
+import com.danieljgaull.texteditor.texteditor.expressions.ExpressionEvaluator;
+import com.danieljgaull.texteditor.texteditor.expressions.ExpressionParser;
 import com.danieljgaull.texteditor.texteditor.handlers.Action;
 import com.danieljgaull.texteditor.texteditor.handlers.FileContentsLoadedHandler;
 import com.danieljgaull.texteditor.texteditor.handlers.MessageHandler;
@@ -10,6 +13,7 @@ import com.danieljgaull.texteditor.texteditor.macro.MacroCall;
 import com.danieljgaull.texteditor.texteditor.macro.MacroCallParser;
 import com.danieljgaull.texteditor.texteditor.macro.MacroParser;
 import com.danieljgaull.texteditor.texteditor.modes.Modes;
+import com.danieljgaull.texteditor.texteditor.text.DataValue;
 import com.danieljgaull.texteditor.texteditor.text.VariableData;
 import com.danieljgaull.texteditor.texteditor.text.TextChange;
 import com.danieljgaull.texteditor.texteditor.text.TextLine;
@@ -41,6 +45,9 @@ public class TextEditorController {
     private List<Macro> macros;
     private MacroCallParser macroCallParser;
 
+    private ExpressionParser exprParser;
+    private ExpressionEvaluator exprEvaluator;
+
     public TextEditorController(MessageHandler statusMessageHandler, MessageHandler titleChangeHandler,
                                 MessageHandler modeChangeHandler) {
         this.statusMessageHandler = statusMessageHandler;
@@ -59,12 +66,16 @@ public class TextEditorController {
 
         macros = new ArrayList<>();
         // TODO: Remove this test
+        // •
         String macroString = """
                 macro bullet()
-                insert •
+                insert (true ? "•"*5 : false)
                 endmacro""";
         macros.add(new MacroParser().parse(macroString));
         macroCallParser = new MacroCallParser(macros);
+
+        exprParser = new ExpressionParser();
+        exprEvaluator = new ExpressionEvaluator();
     }
 
     public void makeDirty() {
@@ -170,13 +181,22 @@ public class TextEditorController {
         }
     }
     private void runInstruction(Instruction instruction, int line, int lineCaret) {
+        // TODO: Add variable data (concat the macro args w/ line data
+        VariableData vars = new VariableData();
         // TODO: Receive arguments so we can use them as variables in here
         if (instruction.getType() == InstructionTypes.InsertText) {
             // Get the two args
-            String preText = instruction.getArgs().get(0);
+            String preTextRaw = instruction.getArgs().get(0);
+            Ast preTextAst = exprParser.parse(preTextRaw);
+            DataValue preTextValue = exprEvaluator.evaluate(preTextAst, vars);
+            String preText = preTextValue.toString();
+
             String postText = "";
             if (instruction.getArgs().size() > 1) {
-                postText = instruction.getArgs().get(1);
+                String postTextRaw = instruction.getArgs().get(1);
+                Ast postTextAst = exprParser.parse(postTextRaw);
+                DataValue postTextValue = exprEvaluator.evaluate(postTextAst, vars);
+                postText = postTextValue.toString();
             }
             // Now add the text
             String raw = lines.get(line).getRawText();
