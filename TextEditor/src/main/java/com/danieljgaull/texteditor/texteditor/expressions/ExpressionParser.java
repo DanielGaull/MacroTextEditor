@@ -4,6 +4,7 @@ import com.danieljgaull.texteditor.texteditor.expressions.Ast;
 import com.danieljgaull.texteditor.texteditor.expressions.BinaryOperators;
 import com.danieljgaull.texteditor.texteditor.expressions.TernaryOperators;
 import com.danieljgaull.texteditor.texteditor.expressions.UnaryOperators;
+import com.danieljgaull.texteditor.texteditor.util.StringUtils;
 import com.danieljgaull.texteditor.texteditor.util.Truple;
 import com.danieljgaull.texteditor.texteditor.util.Tuple;
 
@@ -64,7 +65,7 @@ public class ExpressionParser {
         }
         // See if the entire expression is wrapped in parentheses
         if (input.charAt(0) == OPEN_PAREN) {
-            int endPos = findClosingPosition(input, 0, OPEN_PAREN, CLOSE_PAREN);
+            int endPos = StringUtils.findClosingPosition(input, 0, OPEN_PAREN, CLOSE_PAREN);
             if (endPos == input.length() - 1) {
                 // Extract the inner expression and parse that instead
                 return parse(input.substring(1, input.length() - 1));
@@ -106,7 +107,7 @@ public class ExpressionParser {
         Matcher funcMatcher = FUNCTION_CALL_REGEX.matcher(input);
         if (funcMatcher.find()) {
             String funcName = funcMatcher.group(1);
-            List<String> args = split(funcMatcher.group(2), FUNCTION_ARG_SPLITTER);
+            List<String> args = StringUtils.split(funcMatcher.group(2), FUNCTION_ARG_SPLITTER);
             List<Ast> argAsts = new ArrayList<>();
             for (String arg : args) {
                 argAsts.add(parse(arg.trim()));
@@ -127,7 +128,7 @@ public class ExpressionParser {
         // for each and determine what we have
         String unaryOpPattern = "^(" +
                 unaryOperators.stream()
-                        .map(t -> escapeAll(t.first())) // Escape each character
+                        .map(t -> StringUtils.escapeAll(t.first())) // Escape each character
                         .collect(Collectors.joining("|")) +
                 ")(.*\\S+)$";
         Pattern unaryOpRegex = Pattern.compile(unaryOpPattern);
@@ -154,92 +155,6 @@ public class ExpressionParser {
         return null;
     }
 
-    private static List<String> split(String source, char delimiter) {
-        int parenLevel = 0;
-        int bracketLevel = 0;
-        int braceLevel = 0;
-        boolean inString = false;
-        List<String> results = new ArrayList<>();
-        StringBuilder current = new StringBuilder();
-        for (int i = 0; i < source.length(); i++) {
-            char c = source.charAt(i);
-            if (inString) {
-                if (c == STRING_END && source.charAt(i - 1) != '\\' && source.charAt(i - 2) != '\\') {
-                    // We've found our closing quote, and it has not been escaped
-                    inString = false;
-                }
-            } else {
-                if (c == '(') {
-                    parenLevel++;
-                }
-                if (c == '[') {
-                    bracketLevel++;
-                }
-                if (c == '{') {
-                    braceLevel++;
-                }
-                if (c == ')') {
-                    parenLevel--;
-                }
-                if (c == ']') {
-                    bracketLevel--;
-                }
-                if (c == '}') {
-                    braceLevel--;
-                }
-                if (c == STRING_START) {
-                    inString = true;
-                }
-            }
-            // If we find the delimiter, then complete our current string and start a new one
-            if (c == delimiter && parenLevel == 0 && braceLevel == 0 && bracketLevel == 0 && !inString) {
-                results.add(current.toString());
-                current = new StringBuilder();
-            } else {
-                current.append(c);
-            }
-        }
-        // Make sure to add the last thing! i.e. the value we have in current right now
-        results.add(current.toString());
-        return results;
-    }
-
-    private static String escapeAll(String input) {
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < input.length(); i++) {
-            char c = input.charAt(i);
-            result.append("\\").append(c);
-        }
-        return result.toString();
-    }
-
-    private static int findClosingPosition(String input, int startLoc, char start, char end) {
-        int level = 0;
-        boolean inString = false;
-        for (int i = startLoc + 1; i < input.length(); i++) {
-            char c = input.charAt(i);
-            if (inString) {
-                if (c == STRING_END && input.charAt(i - 1) != '\\' && input.charAt(i - 2) != '\\') {
-                    inString = false;
-                }
-            } else {
-                if (c == STRING_START) {
-                    inString = true;
-                }
-                if (c == start) {
-                    level++;
-                }
-                if (c == end) {
-                    if (level == 0) {
-                        return i;
-                    }
-                    level--;
-                }
-            }
-        }
-        return -1;
-    }
-
     private static BinaryOperatorMatch matchBinaryOperator(String input) {
         boolean inString = false;
         for (int i = 0; i < input.length(); i++) {
@@ -254,7 +169,7 @@ public class ExpressionParser {
                     continue;
                 }
                 if (c == OPEN_PAREN) {
-                    int endPoint = findClosingPosition(input, i, OPEN_PAREN, CLOSE_PAREN);
+                    int endPoint = StringUtils.findClosingPosition(input, i, OPEN_PAREN, CLOSE_PAREN);
                     if (endPoint >= 0) {
                         i = endPoint;
                         continue;

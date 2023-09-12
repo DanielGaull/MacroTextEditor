@@ -8,7 +8,7 @@ import java.util.List;
 public class Mode {
 
     private String name;
-    private List<Variable> variables;
+    private List<ModeVariable> variables;
     private List<KeyBind> keyBinds;
     private String prefixExpr;
     private String suffixExpr;
@@ -16,7 +16,7 @@ public class Mode {
     public Mode(String name) {
         this(name, new ArrayList<>(), new ArrayList<>(), "", "");
     }
-    public Mode(String name, List<Variable> variables, List<KeyBind> keyBinds, String prefixExpr, String suffixExpr) {
+    public Mode(String name, List<ModeVariable> variables, List<KeyBind> keyBinds, String prefixExpr, String suffixExpr) {
         this.name = name;
         this.variables = variables;
         this.keyBinds = keyBinds;
@@ -28,7 +28,7 @@ public class Mode {
         return name;
     }
 
-    public List<Variable> getVariables() {
+    public List<ModeVariable> getVariables() {
         return variables;
     }
 
