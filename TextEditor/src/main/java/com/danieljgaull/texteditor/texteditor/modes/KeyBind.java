@@ -4,12 +4,12 @@ import com.danieljgaull.texteditor.texteditor.instruction.Instruction;
 
 import java.util.List;
 
-public class MacroKeyBind {
+public class KeyBind {
 
     private List<KeyBindCodes> keys;
     private List<Instruction> instructions;
 
-    public MacroKeyBind(List<KeyBindCodes> keys, List<Instruction> instructions) {
+    public KeyBind(List<KeyBindCodes> keys, List<Instruction> instructions) {
         this.keys = keys;
         this.instructions = instructions;
     }

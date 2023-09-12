@@ -1,7 +1,6 @@
 package com.danieljgaull.texteditor.texteditor.modes;
 
 import com.danieljgaull.texteditor.texteditor.data.Variable;
-import com.danieljgaull.texteditor.texteditor.macro.Macro;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,12 +16,13 @@ public class ModeParser {
 
         // Now need to go through and parse everything
         List<Variable> variables = new ArrayList<>();
+        List<KeyBind> keyBinds = new ArrayList<>();
         String prefix = "";
         String suffix = "";
         for (int i = 0; i < lines.length; i++) {
             String line = lines[i];
             if (line.trim().length() > 0) {
-
+                
             }
         }
 
