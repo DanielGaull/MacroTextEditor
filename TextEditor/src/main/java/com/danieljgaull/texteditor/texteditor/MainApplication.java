@@ -39,7 +39,22 @@ public class MainApplication extends Application {
         ModeParser parser = new ModeParser();
         String input = """
                 mode bullet
-                var hi number (7 + 7)
+                var tab_amount number (7 + 7)
+                prefix ("hello " + tab_amount)
+                suffix 5
+                
+                bind TAB
+                set tab_amount (tab_amount + 1)
+                endbind
+                
+                bind SHIFT+TAB
+                set tab_amount (tab_amount - 1)
+                endbind
+                
+                bind START+BACKSPACE
+                mode Default
+                endbind
+                
                 endmode
                 """;
         Mode out = parser.parse(input);

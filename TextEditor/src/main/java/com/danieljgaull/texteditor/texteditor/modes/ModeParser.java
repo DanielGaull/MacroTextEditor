@@ -36,8 +36,8 @@ public class ModeParser {
         // Now need to go through and parse everything
         List<ModeVariable> variables = new ArrayList<>();
         List<KeyBind> keyBinds = new ArrayList<>();
-        String prefix = "";
-        String suffix = "";
+        Ast prefix = Ast.string("");
+        Ast suffix = Ast.string("");
         // Set to 1 to skip header line
         for (int i = 1; i < lines.length; i++) {
             String line = lines[i].trim();
@@ -60,9 +60,9 @@ public class ModeParser {
                     variables.add(parseVar(line));
                 } else if (line.startsWith("prefix")) {
                     // Everything after the space is the prefix expression
-                    prefix = line.substring(line.indexOf(' ') + 1).trim();
+                    prefix = expressionParser.parse(line.substring(line.indexOf(' ') + 1).trim());
                 } else if (line.startsWith("suffix")) {
-                    suffix = line.substring(line.indexOf(' ') + 1).trim();
+                    suffix = expressionParser.parse(line.substring(line.indexOf(' ') + 1).trim());
                 } else if (!line.equals("endmode")) {
                     // Illegal line
                     throw new IllegalArgumentException("The line \"" + line + "\" is invalid in mode definitions");
@@ -92,7 +92,25 @@ public class ModeParser {
     private KeyBind parseKeyBind(List<String> lines) {
         String header = lines.get(0);
         List<KeyBindCodes> keyCode = new ArrayList<>();
-        // TODO: Get the key combination from the header
+        String keyCodeString = header.substring(header.indexOf(' ') + 1).trim();
+        // Split on pluses, trim each piece, and match to the keycode array
+        String[] rawKeyCodes = keyCodeString.split("\\+");
+        for (int i = 0; i < rawKeyCodes.length; i++) {
+            String rawCode = rawKeyCodes[i].trim();
+            // Try matching it to an actual key code
+            boolean foundCode = false;
+            for (KeyBindCodes code : KeyBindCodes.values()) {
+                String name = code.name();
+                if (rawCode.equalsIgnoreCase(name) || ("_" + rawCode).equalsIgnoreCase(name)) {
+                    keyCode.add(code);
+                    foundCode = true;
+                    break;
+                }
+            }
+            if (!foundCode) {
+                throw new IllegalArgumentException("The string '" + rawCode + "' does not correspond to any valid key code.");
+            }
+        }
 
         List<Instruction> instructions = new ArrayList<>();
         for (int i = 1; i < lines.size(); i++) {

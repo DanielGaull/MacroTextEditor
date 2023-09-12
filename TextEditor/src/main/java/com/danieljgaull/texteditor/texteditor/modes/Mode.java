@@ -1,6 +1,7 @@
 package com.danieljgaull.texteditor.texteditor.modes;
 
 import com.danieljgaull.texteditor.texteditor.data.Variable;
+import com.danieljgaull.texteditor.texteditor.expressions.Ast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,13 +11,13 @@ public class Mode {
     private String name;
     private List<ModeVariable> variables;
     private List<KeyBind> keyBinds;
-    private String prefixExpr;
-    private String suffixExpr;
+    private Ast prefixExpr;
+    private Ast suffixExpr;
 
     public Mode(String name) {
-        this(name, new ArrayList<>(), new ArrayList<>(), "", "");
+        this(name, new ArrayList<>(), new ArrayList<>(), Ast.string(""), Ast.string(""));
     }
-    public Mode(String name, List<ModeVariable> variables, List<KeyBind> keyBinds, String prefixExpr, String suffixExpr) {
+    public Mode(String name, List<ModeVariable> variables, List<KeyBind> keyBinds, Ast prefixExpr, Ast suffixExpr) {
         this.name = name;
         this.variables = variables;
         this.keyBinds = keyBinds;
@@ -36,11 +37,11 @@ public class Mode {
         return keyBinds;
     }
 
-    public String getPrefixExpr() {
+    public Ast getPrefixExpr() {
         return prefixExpr;
     }
 
-    public String getSuffixExpr() {
+    public Ast getSuffixExpr() {
         return suffixExpr;
     }
 }
