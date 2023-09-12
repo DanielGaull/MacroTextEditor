@@ -1,5 +1,6 @@
 package com.danieljgaull.texteditor.texteditor.text;
 
+import com.danieljgaull.texteditor.texteditor.data.VariableData;
 import com.danieljgaull.texteditor.texteditor.modes.Mode;
 
 public class TextLine {

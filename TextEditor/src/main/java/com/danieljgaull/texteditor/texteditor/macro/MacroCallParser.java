@@ -1,10 +1,9 @@
 package com.danieljgaull.texteditor.texteditor.macro;
 
-import com.danieljgaull.texteditor.texteditor.text.DataValue;
+import com.danieljgaull.texteditor.texteditor.data.DataValue;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class MacroCallParser {
 

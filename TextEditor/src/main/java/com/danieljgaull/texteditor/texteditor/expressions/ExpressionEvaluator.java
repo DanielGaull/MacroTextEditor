@@ -1,7 +1,8 @@
 package com.danieljgaull.texteditor.texteditor.expressions;
 
-import com.danieljgaull.texteditor.texteditor.text.DataValue;
-import com.danieljgaull.texteditor.texteditor.text.VariableData;
+import com.danieljgaull.texteditor.texteditor.data.DataTypes;
+import com.danieljgaull.texteditor.texteditor.data.DataValue;
+import com.danieljgaull.texteditor.texteditor.data.VariableData;
 
 public class ExpressionEvaluator {
 

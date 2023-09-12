@@ -1,4 +1,4 @@
-package com.danieljgaull.texteditor.texteditor.expressions;
+package com.danieljgaull.texteditor.texteditor.data;
 
 public enum DataTypes {
     String,

@@ -1,6 +1,6 @@
 package com.danieljgaull.texteditor.texteditor.macro;
 
-import com.danieljgaull.texteditor.texteditor.expressions.DataTypes;
+import com.danieljgaull.texteditor.texteditor.data.DataTypes;
 import com.danieljgaull.texteditor.texteditor.instruction.Instruction;
 import com.danieljgaull.texteditor.texteditor.instruction.InstructionParser;
 
@@ -29,7 +29,9 @@ public class MacroParser {
         InstructionParser instParser = new InstructionParser();
         // Ignore first and last lines for instructions (includes endmacro line)
         for (int i = 1; i < lines.length - 1; i++) {
-            instructions.add(instParser.parse(lines[i]));
+            if (lines[i].trim().length() > 0) {
+                instructions.add(instParser.parse(lines[i]));
+            }
         }
 
         return new Macro(name, parameters, instructions);

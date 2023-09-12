@@ -1,6 +1,4 @@
-package com.danieljgaull.texteditor.texteditor.text;
-
-import com.danieljgaull.texteditor.texteditor.expressions.DataTypes;
+package com.danieljgaull.texteditor.texteditor.data;
 
 public class DataValue {
 

@@ -1,6 +1,6 @@
 package com.danieljgaull.texteditor.texteditor.macro;
 
-import com.danieljgaull.texteditor.texteditor.expressions.DataTypes;
+import com.danieljgaull.texteditor.texteditor.data.DataTypes;
 
 public class MacroParameter {
     public String name;
