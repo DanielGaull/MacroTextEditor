@@ -7,11 +7,12 @@ import java.util.Locale;
 public class Modes {
 
     private List<Mode> modes;
+    public static final String DEFAULT_MODE_NAME = "Default";
 
-    public Modes() {
-        modes = new ArrayList<>();
+    public Modes(List<Mode> modes) {
+        modes = new ArrayList<>(modes);
         // Add the default normal mode
-        modes.add(new Mode("Default"));
+        modes.add(new Mode(DEFAULT_MODE_NAME));
     }
 
     public Mode getMode(String name) {

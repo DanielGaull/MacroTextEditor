@@ -11,6 +11,7 @@ import com.danieljgaull.texteditor.texteditor.instruction.InstructionTypes;
 import com.danieljgaull.texteditor.texteditor.macro.Macro;
 import com.danieljgaull.texteditor.texteditor.macro.MacroCall;
 import com.danieljgaull.texteditor.texteditor.macro.MacroCallParser;
+import com.danieljgaull.texteditor.texteditor.modes.Mode;
 import com.danieljgaull.texteditor.texteditor.modes.Modes;
 import com.danieljgaull.texteditor.texteditor.data.DataValue;
 import com.danieljgaull.texteditor.texteditor.data.VariableData;
@@ -56,13 +57,12 @@ public class TextEditorController {
 
         currentLoadedFile = null;
         clearDirty();
-        modes = new Modes();
 
         //modeChangeHandler.handle(modes.getMode().getName());
 
         lines = new ArrayList<>();
         // Add our first, empty line
-        lines.add(new TextLine(modes.getMode("Default"), "", new VariableData()));
+        lines.add(new TextLine(modes.getMode(Modes.DEFAULT_MODE_NAME), "", new VariableData()));
 
         macros = new ArrayList<>();
         macroCallParser = new MacroCallParser(macros);
