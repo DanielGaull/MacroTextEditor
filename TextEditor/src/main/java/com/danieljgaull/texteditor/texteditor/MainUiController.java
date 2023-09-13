@@ -55,7 +55,6 @@ public class MainUiController implements PrimaryStageAware {
         } catch (FileNotFoundException e) {
             // TODO: Proper UI error handling for this and for individual plugin load errors
             System.out.println("Plugin file is missing! No plugins have been loaded");
-            e.printStackTrace();
         }
         for (int i = 0; i < loadedPlugins.size(); i++) {
             ObjectOrError<Plugin> attempt = loadedPlugins.get(i);
