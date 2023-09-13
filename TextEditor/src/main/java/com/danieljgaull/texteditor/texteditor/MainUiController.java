@@ -1,10 +1,9 @@
 package com.danieljgaull.texteditor.texteditor;
 
+import com.danieljgaull.texteditor.texteditor.plugin.Plugin;
+import com.danieljgaull.texteditor.texteditor.plugin.PluginLoader;
 import com.danieljgaull.texteditor.texteditor.text.TextChange;
-import com.danieljgaull.texteditor.texteditor.util.Point;
-import com.danieljgaull.texteditor.texteditor.util.PrimaryStageAware;
-import com.danieljgaull.texteditor.texteditor.util.StringUtils;
-import com.danieljgaull.texteditor.texteditor.util.Tuple;
+import com.danieljgaull.texteditor.texteditor.util.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -19,6 +18,8 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextBoundsType;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -45,6 +46,27 @@ public class MainUiController implements PrimaryStageAware {
         // Only set the progress bar visible when stuff is loading
         progressBar.setVisible(false);
 
+        // Need to load in plugins
+        PluginLoader pluginLoader = new PluginLoader(System.getenv("APPDATA") + File.separator + "TextEditor");
+        List<Plugin> plugins = new ArrayList<>();
+        List<ObjectOrError<Plugin>> loadedPlugins = new ArrayList<>();
+        try {
+            loadedPlugins = pluginLoader.loadPlugins();
+        } catch (FileNotFoundException e) {
+            // TODO: Proper UI error handling for this and for individual plugin load errors
+            System.out.println("Plugin file is missing! No plugins have been loaded");
+            e.printStackTrace();
+        }
+        for (int i = 0; i < loadedPlugins.size(); i++) {
+            ObjectOrError<Plugin> attempt = loadedPlugins.get(i);
+            if (attempt.isError()) {
+                System.out.println("Failed to load plugin '" + attempt.getName() + "'. Message: " +
+                        attempt.getErrorMessage());
+            } else {
+                plugins.add(attempt.getObject());
+            }
+        }
+
         textEditorController = new TextEditorController(
                 str -> statusText.setText(str),
                 str -> {
@@ -52,7 +74,8 @@ public class MainUiController implements PrimaryStageAware {
                         stage.setTitle(str);
                     }
                 },
-                str -> modeText.setText("Mode: " + str)
+                str -> modeText.setText("Mode: " + str),
+                plugins
         );
 
         textArea.setTextFormatter(new TextFormatter<String>(this::handleTextChange));

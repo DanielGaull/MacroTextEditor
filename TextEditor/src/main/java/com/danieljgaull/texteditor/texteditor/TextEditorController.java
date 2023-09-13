@@ -11,10 +11,10 @@ import com.danieljgaull.texteditor.texteditor.instruction.InstructionTypes;
 import com.danieljgaull.texteditor.texteditor.macro.Macro;
 import com.danieljgaull.texteditor.texteditor.macro.MacroCall;
 import com.danieljgaull.texteditor.texteditor.macro.MacroCallParser;
-import com.danieljgaull.texteditor.texteditor.macro.MacroParser;
 import com.danieljgaull.texteditor.texteditor.modes.Modes;
 import com.danieljgaull.texteditor.texteditor.data.DataValue;
 import com.danieljgaull.texteditor.texteditor.data.VariableData;
+import com.danieljgaull.texteditor.texteditor.plugin.Plugin;
 import com.danieljgaull.texteditor.texteditor.text.TextChange;
 import com.danieljgaull.texteditor.texteditor.text.TextLine;
 import javafx.beans.property.DoubleProperty;
@@ -49,7 +49,7 @@ public class TextEditorController {
     private ExpressionEvaluator exprEvaluator;
 
     public TextEditorController(MessageHandler statusMessageHandler, MessageHandler titleChangeHandler,
-                                MessageHandler modeChangeHandler) {
+                                MessageHandler modeChangeHandler, List<Plugin> plugins) {
         this.statusMessageHandler = statusMessageHandler;
         this.titleChangeHandler = titleChangeHandler;
         this.modeChangeHandler = modeChangeHandler;
@@ -65,19 +65,6 @@ public class TextEditorController {
         lines.add(new TextLine(modes.getMode("Default"), "", new VariableData()));
 
         macros = new ArrayList<>();
-        // TODO: Remove this test
-        // •
-        String macroString = """
-                macro bullet()
-                insert (true ? "•"*5 : false)
-                endmacro""";
-        macros.add(new MacroParser().parse(macroString));
-        macroString = """
-                macro header(length:number)
-                insert (("="*length) + " ") (" " + ("="*length))
-                endmacro
-                """;
-        macros.add(new MacroParser().parse(macroString));
         macroCallParser = new MacroCallParser(macros);
 
         exprParser = new ExpressionParser();
