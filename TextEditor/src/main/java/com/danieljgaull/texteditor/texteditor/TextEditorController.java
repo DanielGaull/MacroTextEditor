@@ -51,6 +51,8 @@ public class TextEditorController {
 
     public TextEditorController(MessageHandler statusMessageHandler, MessageHandler titleChangeHandler,
                                 MessageHandler modeChangeHandler, List<Plugin> plugins) {
+        loadPlugins(plugins);
+
         this.statusMessageHandler = statusMessageHandler;
         this.titleChangeHandler = titleChangeHandler;
         this.modeChangeHandler = modeChangeHandler;
@@ -64,11 +66,21 @@ public class TextEditorController {
         // Add our first, empty line
         lines.add(new TextLine(modes.getMode(Modes.DEFAULT_MODE_NAME), "", new VariableData()));
 
-        macros = new ArrayList<>();
         macroCallParser = new MacroCallParser(macros);
 
         exprParser = new ExpressionParser();
         exprEvaluator = new ExpressionEvaluator();
+    }
+
+    private void loadPlugins(List<Plugin> plugins) {
+        List<Mode> modes = new ArrayList<>();
+        List<Macro> macros = new ArrayList<>();
+        for (Plugin plugin : plugins) {
+            modes.addAll(plugin.getModes());
+            macros.addAll(plugin.getMacros());
+        }
+        this.macros = macros;
+        this.modes = new Modes(modes);
     }
 
     public void makeDirty() {

@@ -10,9 +10,9 @@ public class Modes {
     public static final String DEFAULT_MODE_NAME = "Default";
 
     public Modes(List<Mode> modes) {
-        modes = new ArrayList<>(modes);
-        // Add the default normal mode
-        modes.add(new Mode(DEFAULT_MODE_NAME));
+        this.modes = new ArrayList<>(modes);
+        // Add the default normal mode; should be the very first mode, too
+        this.modes.add(0, new Mode(DEFAULT_MODE_NAME));
     }
 
     public Mode getMode(String name) {
