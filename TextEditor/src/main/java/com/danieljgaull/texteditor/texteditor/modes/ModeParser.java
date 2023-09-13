@@ -27,10 +27,8 @@ public class ModeParser {
     }
 
     // Should include all the way from the "mode" statement to the "endmode" statement
-    public Mode parse(String input) {
-        String[] lines = input.split("\n");
-
-        String header = lines[0];
+    public Mode parse(List<String> lines) {
+        String header = lines.get(0);
         String name = header.substring(header.indexOf(' ') + 1).trim();
 
         // Now need to go through and parse everything
@@ -39,8 +37,8 @@ public class ModeParser {
         Ast prefix = Ast.string("");
         Ast suffix = Ast.string("");
         // Set to 1 to skip header line
-        for (int i = 1; i < lines.length; i++) {
-            String line = lines[i].trim();
+        for (int i = 1; i < lines.size(); i++) {
+            String line = lines.get(i).trim();
             if (line.length() > 0) {
                 // If the line starts with 'var', it's a variable
                 // 'bind' -> Key bind
@@ -48,11 +46,11 @@ public class ModeParser {
                 if (line.startsWith("bind")) {
                     // Need to find the "endbind" statement and get all those lines to send to parseKeyBind
                     List<String> bindLines = new ArrayList<>();
-                    while (!lines[i].trim().equals("endbind")) {
-                        bindLines.add(lines[i]);
+                    while (!lines.get(i).trim().equals("endbind")) {
+                        bindLines.add(lines.get(i));
                         i++;
-                        if (i >= lines.length) {
-                            throw new IllegalArgumentException("'bind' statement is missing the matching 'endbind' statement");
+                        if (i >= lines.size()) {
+                            throw new IllegalArgumentException("'bind' statement is missing corresponding 'endbind'");
                         }
                     }
                     keyBinds.add(parseKeyBind(bindLines));

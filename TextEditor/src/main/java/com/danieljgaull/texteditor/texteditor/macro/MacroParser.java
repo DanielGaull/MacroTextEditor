@@ -16,9 +16,8 @@ public class MacroParser {
     private static final char PARAMS_DELIMITER = ',';
 
     // Should include all the way from the "macro" statement to the "endmacro" statement
-    public Macro parse(String input) {
-        String[] lines = input.split("\n");
-        String header = lines[0];
+    public Macro parse(List<String> lines) {
+        String header = lines.get(0);
         int headerOpenParenPos = header.indexOf(OPEN_PAREN);
         int headerCloseParenPos = header.indexOf(CLOSE_PAREN);
         String name = header.substring(header.indexOf(' ') + 1, headerOpenParenPos).trim();
@@ -28,9 +27,9 @@ public class MacroParser {
         List<Instruction> instructions = new ArrayList<>();
         InstructionParser instParser = new InstructionParser();
         // Ignore first and last lines for instructions (includes endmacro line)
-        for (int i = 1; i < lines.length - 1; i++) {
-            if (lines[i].trim().length() > 0) {
-                instructions.add(instParser.parse(lines[i]));
+        for (int i = 1; i < lines.size() - 1; i++) {
+            if (lines.get(i).trim().length() > 0) {
+                instructions.add(instParser.parse(lines.get(i)));
             }
         }
 
